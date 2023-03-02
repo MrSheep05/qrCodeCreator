@@ -1,0 +1,110 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+body {
+  position: relative;
+  color: white;
+  height: 100vh;
+  background: linear-gradient(
+    200.96deg,
+    #fedc2a -29.09%,
+    #dd5789 51.77%,
+    #7a2c9e 129.35%
+  );
+  font-family: sans-serif;
+  overflow-y: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+button {
+  background-color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  appearance: none;
+  font-size: 1.3rem;
+  transition: all ease-in 0.1s;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  height: fit-content;
+  width: fit-content;
+  margin: 10px;
+}
+
+a:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  text-align: center;
+  font-weight: bold;
+  margin: 3px;
+}
+
+input[type='number']:focus-visible {
+  outline-width: 0.5px !important;
+}
+
+input[type='color'] {
+  -webkit-appearance: none;
+  border: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 20%;
+}
+input[type='color']::-webkit-color-swatch-wrapper {
+  padding: 0;
+  margin: 0;
+}
+input[type='color']::-webkit-color-swatch {
+  border: 1;
+  border-color: black;
+  border-radius: 50%;
+}
+
+textarea:focus {
+  border-radius: 2px;
+}
+textarea {
+  border: none;
+}
+textarea:hover {
+  border-radius: 1px;
+  border-style: dotted;
+}
+/* .gradient {
+  background: rgb(255, 255, 255);
+  /* background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(244, 244, 255, 1) 36%,
+    rgba(66, 214, 244, 1) 100%
+  ); */
+/* } */
