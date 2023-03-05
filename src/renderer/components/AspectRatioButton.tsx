@@ -1,4 +1,4 @@
-import { IconButton, Popover } from '@mui/material';
+import { IconButton, Popover, Tooltip } from '@mui/material';
 import { useState, useContext } from 'react';
 import AspectRatioIcon from '@mui/icons-material/AspectRatio';
 import { AppState } from 'renderer/utils/AppStateComponent';
@@ -15,7 +15,6 @@ const AspectRatioButton = () => {
     const regex = /\b[1-2]?\d{1}\b/gm;
     if (regex.test(target.value)) {
       const value = parseInt(target.value);
-      console.log('przeszlo');
       if (value >= 20 || typeof value !== 'number') {
         target.value = '20';
       }
@@ -31,16 +30,18 @@ const AspectRatioButton = () => {
 
   return (
     <div>
-      <IconButton
-        size="small"
-        aria-describedby="ratioPrompt"
-        onClick={({ target }) => {
-          setIsOpened(true);
-          setAnchorPopover(target);
-        }}
-      >
-        <AspectRatioIcon />
-      </IconButton>
+      <Tooltip title="Skala">
+        <IconButton
+          size="small"
+          aria-describedby="ratioPrompt"
+          onClick={({ target }) => {
+            setIsOpened(true);
+            setAnchorPopover(target);
+          }}
+        >
+          <AspectRatioIcon />
+        </IconButton>
+      </Tooltip>
       <Popover
         anchorEl={anchorPopover}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}

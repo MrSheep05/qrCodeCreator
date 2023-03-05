@@ -1,4 +1,4 @@
-import { IconButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import CropLandscapeIcon from '@mui/icons-material/CropLandscape';
 import CropPortraitIcon from '@mui/icons-material/CropPortrait';
 
@@ -12,9 +12,13 @@ const OrientationButton = ({
   type: 'horizontal' | 'vertical';
 }) => {
   return (
-    <IconButton size="small" onClick={fn} disabled={isDisabled}>
-      {type === 'horizontal' ? <CropLandscapeIcon /> : <CropPortraitIcon />}
-    </IconButton>
+    <Tooltip title={type === 'horizontal' ? 'Poziomo' : 'Pionowo'}>
+      <div>
+        <IconButton size="small" onClick={fn} disabled={isDisabled}>
+          {type === 'horizontal' ? <CropLandscapeIcon /> : <CropPortraitIcon />}
+        </IconButton>
+      </div>
+    </Tooltip>
   );
 };
 

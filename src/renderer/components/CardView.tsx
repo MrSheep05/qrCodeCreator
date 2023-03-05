@@ -23,7 +23,9 @@ const CardView = ({ orientation, color }: props) => {
       }}
       variant="outlined"
     >
-      {state.children}
+      {state.children
+        ? Object.keys(state.children).map((key) => state.children[key])
+        : undefined}
     </Card>
   );
 };

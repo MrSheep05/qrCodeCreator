@@ -1,4 +1,4 @@
-import { IconButton, Popover } from '@mui/material';
+import { IconButton, Popover, Tooltip } from '@mui/material';
 import BrushIcon from '@mui/icons-material/Brush';
 import { useState, useRef } from 'react';
 import { inputEventFn } from 'renderer/utils';
@@ -9,16 +9,18 @@ const ColorPickerButton = ({ fn }: { fn: inputEventFn }) => {
 
   return (
     <div>
-      <IconButton
-        aria-describedby="colorPick"
-        size="small"
-        onClick={({ target }) => {
-          setIsOpened(true);
-          setAnchorPopover(target);
-        }}
-      >
-        <BrushIcon />
-      </IconButton>
+      <Tooltip title="Kolor karty">
+        <IconButton
+          aria-describedby="colorPick"
+          size="small"
+          onClick={({ target }) => {
+            setIsOpened(true);
+            setAnchorPopover(target);
+          }}
+        >
+          <BrushIcon />
+        </IconButton>
+      </Tooltip>
       <Popover
         anchorEl={anchorPopover}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}

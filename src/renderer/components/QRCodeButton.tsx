@@ -7,11 +7,12 @@ import {
   DialogContent,
   DialogContentText,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
-import QRCode from 'qrcode';
-import { Children, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { AppState } from 'renderer/utils/AppStateComponent';
+import QRContainer from './QRContainer';
 
 const inputs = [
   // { id: 'name', label: 'Imię', isRequired: true, isValid: true },
@@ -66,48 +67,30 @@ const QRCodeButton = () => {
     });
   };
 
-  const createQR = async (value: string) => {
-    const canvas = document.createElement('canvas');
-    await QRCode.toCanvas(canvas, value, { margin: 1 });
-    const jsx = await (
-      <div
-        ref={(ref) => {
-          ref?.appendChild(canvas);
-        }}
-        key={Children.count(state.children)}
-        style={{
-          fontSize: 8,
-          textAlign: 'center',
-          justifyContent: 'center',
-          display: 'flex',
-          flexDirection: 'column-reverse',
-          margin: 0,
-        }}
-      >
-        <span>{inputsValues['id'].value}</span>
-      </div>
-    );
-
+  const createQR = (value: string) => {
+    const { index } = state;
     dispatch({
       type: 'appendChild',
-      payload: jsx,
+      payload: <QRContainer value={value} key={index} index={index} />,
     });
   };
 
   return (
     <div>
-      <IconButton
-        size="small"
-        onClick={async () => {
-          if (state.qr) {
-            createQR(state.qr);
-            return;
-          }
-          setIsOpened(true);
-        }}
-      >
-        <QrCode2Icon />
-      </IconButton>
+      <Tooltip title="Kod QR">
+        <IconButton
+          size="small"
+          onClick={async () => {
+            if (state.qr) {
+              createQR(state.qr);
+              return;
+            }
+            setIsOpened(true);
+          }}
+        >
+          <QrCode2Icon />
+        </IconButton>
+      </Tooltip>
       <Dialog
         open={isOpened}
         onClose={() => {
@@ -155,7 +138,7 @@ const QRCodeButton = () => {
                   ''
                 );
                 dispatch({ type: 'setQR', payload: userData });
-                await createQR(userData);
+                createQR(userData);
                 setIsOpened(false);
               }
             }}

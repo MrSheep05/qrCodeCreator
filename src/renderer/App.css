@@ -89,22 +89,17 @@ input[type='color']::-webkit-color-swatch {
   border-radius: 50%;
 }
 
-textarea:focus {
-  border-radius: 2px;
-}
 textarea {
   border: none;
+  resize: none;
 }
 textarea:hover {
+  resize: both;
   border-radius: 1px;
   border-style: dotted;
 }
-/* .gradient {
-  background: rgb(255, 255, 255);
-  /* background: linear-gradient(
-    0deg,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(244, 244, 255, 1) 36%,
-    rgba(66, 214, 244, 1) 100%
-  ); */
-/* } */
+
+.placeholder:hover {
+  border-radius: 1px;
+  border-style: dotted;
+}
