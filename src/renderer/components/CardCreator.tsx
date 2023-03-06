@@ -13,18 +13,14 @@ import DraggableWrapper from './DraggableWrapper';
 import PlaceholderButton from './PlaceholderButton';
 import CreateTemplateButton from './CreateTemplateButton';
 import NavigationMenuButton from './NavigationMenuButton';
-import Quill from 'quill';
-import QuillCustomToolbar from './QuillCutomToolbar';
+import TextEditorBar from './TextEditorBar';
+import BrushIcon from '@mui/icons-material/Brush';
 
 const CardCreator = () => {
   const { state, dispatch } = useContext(AppState);
   const [color, setColor] = useState<string>('#ffffff');
   const [isHorizontal, setIsHorizontal] = useState<boolean>(true);
-
-  const quillEditorContainerTempHolder = useRef<any>(null);
-  const quillToolbarContainer = useRef<HTMLDivElement>(null);
-  const quillEditorContainer = useRef<any>(null);
-  const quillInstance = useRef<any>(null);
+  const [isFocused, setIsFocused] = useState<number | undefined>();
 
   const orientationButtonFn = (isTrue = true) => {
     return () => {
@@ -51,54 +47,6 @@ const CardCreator = () => {
     }
   };
 
-  useEffect(() => {
-    quillInstance!.current = new Quill(quillEditorContainer.current, {
-      theme: 'bubble',
-      modules: {
-        toolbar: quillToolbarContainer.current,
-      },
-    });
-  }, []);
-
-  useEffect(() => {
-    if (quillInstance.current && state.activeEditable) {
-      const quill = quillInstance.current;
-      const onTextChange = () => {
-        dispatch({
-          payload: quill.container.firstChild.innerHTML,
-          type: 'updateEditorContent',
-        });
-      };
-      quill.on('text-change', onTextChange);
-      return () => quill.off('text-change', onTextChange);
-    }
-  }, [quillInstance, state.activeEditable, state.quillContent]);
-
-  const setEditableActive = ({
-    editable,
-    active,
-    content,
-  }: {
-    editable: number;
-    active: boolean;
-    content: string;
-  }) => {
-    if (active) {
-      const quill = quillInstance.current;
-      const delta = quill.clipboard.convert(content);
-      quill.setContents(delta, 'silent');
-      dispatch({ type: 'setEditable', payload: editable });
-      setTimeout(() => {
-        quill.setSelection({ index: 0, length: quill.getLength() - 1 }, 'api');
-      });
-    } else {
-      quillEditorContainerTempHolder.current.appendChild(
-        quillEditorContainer.current
-      );
-      dispatch({ type: 'setEditable', payload: undefined });
-    }
-  };
-
   const buttons: { [key: string]: JSX.Element } = {
     button1: <FileButton />,
 
@@ -120,13 +68,12 @@ const CardCreator = () => {
 
     button4: <AspectRatioButton />,
     button5: <QRCodeButton></QRCodeButton>,
-    button6: <ColorPickerButton fn={colorChangeFn} />,
-    button7: (
-      <TextAreaButton
-        fn={setEditableActive}
-        quillEditor={quillEditorContainer}
-      />
+    button6: (
+      <ColorPickerButton fn={colorChangeFn} title={'Kolor karty'}>
+        <BrushIcon />
+      </ColorPickerButton>
     ),
+    button7: <TextAreaButton fn={setIsFocused} />,
     button8: <PlaceholderButton />,
     button9: <CreateTemplateButton />,
   };
@@ -181,11 +128,9 @@ const CardCreator = () => {
         </AppBar>
       </DragDropContext>
 
-      <div ref={quillEditorContainerTempHolder}>
-        <div ref={quillEditorContainer}></div>
-      </div>
       <CardView orientation={isHorizontal} color={color}></CardView>
-      <QuillCustomToolbar innerRef={quillToolbarContainer} />
+
+      <TextEditorBar focus={isFocused} setFocus={setIsFocused} />
     </div>
   );
 };

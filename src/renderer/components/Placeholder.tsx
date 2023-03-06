@@ -22,13 +22,7 @@ const Placeholder = ({ index }: { index: number }) => {
       })}
       style={{ backgroundColor: style.backgroundColor }}
     >
-      <Resizable
-        className="placeholder"
-        defaultSize={deafult}
-        onResize={(_, __, ___, delta) => {
-          setStyle({ ...style, width: delta.width, height: delta.height });
-        }}
-      >
+      <Resizable className="placeholder" defaultSize={deafult}>
         <ContextMenu
           index={index}
           setMouseContext={setMouseContext}

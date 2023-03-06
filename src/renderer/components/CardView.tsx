@@ -1,5 +1,5 @@
 import { Card } from '@mui/material';
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import useRatio from 'renderer/hooks/useRatio';
 import { AppState } from 'renderer/utils/AppStateComponent';
 type props = {
@@ -9,8 +9,11 @@ type props = {
 const CardView = ({ orientation, color }: props) => {
   const [width, height] = useRatio(orientation);
   const { state } = useContext(AppState);
+  const cardView = useRef(null);
+
   return (
     <Card
+      ref={cardView}
       sx={{
         height,
         width,

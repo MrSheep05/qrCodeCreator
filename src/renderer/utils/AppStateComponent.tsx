@@ -15,9 +15,7 @@ type Action = {
     | 'appendChild'
     | 'setButtonsOrder'
     | 'removeChild'
-    | 'addEditable'
-    | 'setEditable'
-    | 'updateEditorContent';
+    | 'contentOrder';
   payload: string | JSX.Element | string[] | number | undefined;
 };
 
@@ -27,8 +25,6 @@ type State = {
   children: ChildrenList;
   buttonsOrder: string[];
   index: number;
-  quillContent: { [key: string]: string };
-  activeEditable: number | undefined;
 };
 
 type AppStateContext = {
@@ -100,15 +96,6 @@ export const reducer = (state: State, action: Action): any => {
       };
     }
 
-    case 'addEditable': {
-      return {
-        ...state,
-        index: state.index + 1,
-        children: { ...state.children, [state.index]: action.payload },
-        quillContent: { ...state.quillContent, [state.index]: 'Pole tekstowe' },
-      };
-    }
-
     case 'setButtonsOrder': {
       return { ...state, buttonsOrder: action.payload };
     }
@@ -120,21 +107,9 @@ export const reducer = (state: State, action: Action): any => {
       }
     }
 
-    case 'setEditable': {
-      return { ...state, activeEditable: action.payload };
+    case 'contentOrder': {
     }
 
-    case 'updateEditorContent': {
-      if (state.activeEditable) {
-        return {
-          ...state,
-          quillContent: {
-            ...state.quillContent,
-            [state.activeEditable!]: action.payload,
-          },
-        };
-      }
-    }
     default: {
       return { ...state };
     }

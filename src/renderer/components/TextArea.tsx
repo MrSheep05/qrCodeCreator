@@ -1,92 +1,48 @@
-import { useContext, useEffect, useRef } from 'react';
-import { AppState } from 'renderer/utils/AppStateComponent';
+import { Editor } from '@tinymce/tinymce-react';
+import { Resizable } from 're-resizable';
+import { useRef, useState } from 'react';
 
 type Props = {
-  editable: number;
-  quillEditorContainer: React.RefObject<HTMLDivElement>;
-  onChangeActive: ({
-    editable,
-    active,
-  }: {
-    active: boolean;
-    editable: number;
-    content: string;
-  }) => void;
+  fn: React.Dispatch<React.SetStateAction<number | undefined>>;
+  index: number;
 };
-const TextArea = ({
-  quillEditorContainer,
-  onChangeActive,
-  editable,
-}: Props) => {
-  const contentEl = useRef<HTMLDivElement>(null);
-
-  const quillEditorParent = useRef<HTMLDivElement>(null);
-  const { state } = useContext(AppState);
-  const isActive = state.activeEditable === editable;
-
-  useEffect(() => {
-    contentEl.current!.innerHTML = state.quillContent[editable];
-  }, [state.quillContent[editable]]);
-
-  useEffect(() => {
-    if (isActive)
-      quillEditorParent.current!.appendChild(quillEditorContainer.current!);
-
-    quillEditorParent.current!.style.display = isActive ? 'block' : 'none';
-    contentEl.current!.style.display = isActive ? 'none' : 'block';
-  }, [quillEditorParent, quillEditorContainer, isActive]);
-
-  useEffect(() => {
-    if (isActive) {
-      const onKeyUp = (event: KeyboardEvent) => {
-        if (event.code === 'Escape') {
-          activate(false);
-        }
-      };
-
-      document.addEventListener('keyup', onKeyUp);
-      return () => document.removeEventListener('keyup', onKeyUp);
-    }
-  }, [isActive]);
-
-  const activate = (active: boolean) => {
-    onChangeActive({ editable, active, content: state.quillContent[editable] });
-  };
-
+const TextArea = ({ fn, index }: Props) => {
+  const editorRef = useRef<any>(null);
+  const [style, setStyle] = useState<{ width: number; height: number }>({
+    width: 100,
+    height: 100,
+  });
   return (
-    <div
-      className="editable"
-      id={`${editable}`}
-      style={{
-        position: 'relative',
-        flexGrow: 1,
-        flexBasis: 0,
-        width: 0,
-      }}
-      onDoubleClick={() => activate(true)}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0,
-          display: 'none',
+    <div style={{ height: style.height, width: style.width }}>
+      <Resizable
+        onResizeStop={(_, __, ___, delta) => {
+          setStyle({
+            width: style.width + delta.width,
+            height: style.height + delta.height,
+          });
         }}
-        ref={quillEditorParent}
-      ></div>
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: '2rem',
-        }}
-        ref={contentEl}
-      ></div>
+        defaultSize={{ width: 100, height: 100 }}
+        className="placeholder"
+      >
+        <Editor
+          onInit={(event, editor) => (editorRef.current = editor)}
+          init={{
+            toolbar: false,
+            menubar: false,
+            statusbar: false,
+            suffix: '.min',
+            height: '100%',
+            width: '100%',
+            resize: 'both',
+            inline_boundaries: false,
+            skin: 'borderless',
+          }}
+          apiKey="w1oqeoai6gzdzrggfs57eka5qds7sqi4am42b1o8392qgrrx"
+          onClick={() => {
+            fn(index);
+          }}
+        ></Editor>
+      </Resizable>
     </div>
   );
 };
