@@ -1,5 +1,4 @@
 import { createContext, useReducer } from 'react';
-import { Children } from 'react';
 
 interface Props {
   children: JSX.Element[] | JSX.Element;
@@ -15,9 +14,7 @@ type Action = {
     | 'appendChild'
     | 'setButtonsOrder'
     | 'removeChild'
-    | 'addEditable'
-    | 'setEditable'
-    | 'updateEditorContent';
+    | 'contentOrder';
   payload: string | JSX.Element | string[] | number | undefined;
 };
 
@@ -27,8 +24,7 @@ type State = {
   children: ChildrenList;
   buttonsOrder: string[];
   index: number;
-  quillContent: { [key: string]: string };
-  activeEditable: number | undefined;
+  contentOrder: string[];
 };
 
 type AppStateContext = {
@@ -70,6 +66,7 @@ const initialButtonsOrder = [
   'button7',
   'button8',
   'button9',
+  'button10',
 ];
 
 export const AppState = createContext({} as AppStateContext);
@@ -82,6 +79,7 @@ export const initialState = {
     dataName: 'buttonsOrder',
   }),
   index: 0,
+  contentOrder: [],
 };
 
 export const reducer = (state: State, action: Action): any => {
@@ -97,15 +95,7 @@ export const reducer = (state: State, action: Action): any => {
         ...state,
         index: state.index + 1,
         children: { ...state.children, [state.index]: action.payload },
-      };
-    }
-
-    case 'addEditable': {
-      return {
-        ...state,
-        index: state.index + 1,
-        children: { ...state.children, [state.index]: action.payload },
-        quillContent: { ...state.quillContent, [state.index]: 'Pole tekstowe' },
+        contentOrder: [...state.contentOrder, `${state.index}`],
       };
     }
 
@@ -116,25 +106,23 @@ export const reducer = (state: State, action: Action): any => {
     case 'removeChild': {
       if (typeof action.payload === 'number') {
         delete state.children[action.payload];
-        return { ...state, children: state.children };
-      }
-    }
-
-    case 'setEditable': {
-      return { ...state, activeEditable: action.payload };
-    }
-
-    case 'updateEditorContent': {
-      if (state.activeEditable) {
         return {
           ...state,
-          quillContent: {
-            ...state.quillContent,
-            [state.activeEditable!]: action.payload,
-          },
+          children: state.children,
+          contentOrder: state.contentOrder.filter(
+            (value) => value !== `${action.payload}`
+          ),
         };
       }
     }
+
+    case 'contentOrder': {
+      return {
+        ...state,
+        contentOrder: action.payload,
+      };
+    }
+
     default: {
       return { ...state };
     }

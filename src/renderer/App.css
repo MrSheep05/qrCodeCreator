@@ -92,6 +92,7 @@ input[type='color']::-webkit-color-swatch {
 textarea {
   border: none;
   resize: none;
+  visibility: visible !important;
 }
 textarea:hover {
   resize: both;
@@ -100,6 +101,11 @@ textarea:hover {
 }
 
 .placeholder:hover {
-  border-radius: 1px;
+  border-radius: 1rem;
   border-style: dotted;
+}
+
+.mce-content-body {
+  height: 100%;
+  width: 100%;
 }

@@ -3,6 +3,7 @@ type Props = {
   innerRef: any;
   id: any;
   children: JSX.Element | JSX.Element[];
+  isDragging: boolean;
 };
 
 const DraggableWrapper: React.FC<Props> = ({
@@ -10,6 +11,7 @@ const DraggableWrapper: React.FC<Props> = ({
   innerRef,
   id,
   children,
+  isDragging,
 }) => {
   return (
     <div

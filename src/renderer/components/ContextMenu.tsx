@@ -6,7 +6,7 @@ import { MouseDimension } from 'renderer/utils';
 
 type Props = {
   index: number;
-  children: JSX.Element | JSX.Element[];
+  children?: JSX.Element | JSX.Element[];
   mouseContext: MouseDimension;
   setMouseContext: React.Dispatch<React.SetStateAction<MouseDimension>>;
 };

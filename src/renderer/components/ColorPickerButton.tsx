@@ -1,34 +1,44 @@
 import { IconButton, Popover, Tooltip } from '@mui/material';
-import BrushIcon from '@mui/icons-material/Brush';
-import { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 import { inputEventFn } from 'renderer/utils';
 
-const ColorPickerButton = ({ fn }: { fn: inputEventFn }) => {
-  const [anchorPopover, setAnchorPopover] = useState<any>();
+type Props = {
+  fn: inputEventFn;
+  title: string;
+  children: JSX.Element;
+  defaultValue?: string;
+};
+const ColorPickerButton: React.FC<Props> = ({
+  fn,
+  title,
+  children,
+  defaultValue = '#ffffff',
+}) => {
+  const anchorPopover = useRef(null);
   const [isOpened, setIsOpened] = useState<boolean>(false);
 
   return (
     <div>
-      <Tooltip title="Kolor karty">
+      <Tooltip title={title}>
         <IconButton
-          aria-describedby="colorPick"
+          aria-describedby={`title${title}`}
           size="small"
-          onClick={({ target }) => {
+          ref={anchorPopover}
+          onClick={() => {
             setIsOpened(true);
-            setAnchorPopover(target);
           }}
         >
-          <BrushIcon />
+          {children}
         </IconButton>
       </Tooltip>
       <Popover
-        anchorEl={anchorPopover}
+        anchorEl={anchorPopover.current}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         open={isOpened}
-        id="colorPick"
+        id={`title${title}`}
         onClose={() => setIsOpened(false)}
       >
-        <input type="color" defaultValue="#ffffff" onChange={fn} />
+        <input type="color" defaultValue={defaultValue} onChange={fn} />
       </Popover>
     </div>
   );
