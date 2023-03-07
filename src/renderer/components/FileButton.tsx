@@ -1,8 +1,11 @@
 import { IconButton, Tooltip } from '@mui/material';
 import ImageIcon from '@mui/icons-material/Image';
-import { useRef } from 'react';
+import { useContext, useRef } from 'react';
+import { AppState } from 'renderer/utils/AppStateComponent';
+import ImageContainer from './ImageContainer';
 
 const FileButton = () => {
+  const { dispatch } = useContext(AppState);
   const fileInput = useRef<HTMLInputElement>(null);
   const imageTypes = ['image/gif', 'image/jpeg', 'image/png'];
   const fileButtonFn = () => {
@@ -23,11 +26,12 @@ const FileButton = () => {
               imageTypes.includes(file.type)
             );
             target.value = '';
-            console.log(checkedTypes);
+            console.log(checkedTypes[0]);
+            dispatch({
+              type: 'appendChild',
+              payload: <ImageContainer image={checkedTypes[0]} />,
+            });
           }
-        }}
-        onSubmit={() => {
-          console.log('Aa');
         }}
       />
 

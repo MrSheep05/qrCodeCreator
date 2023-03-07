@@ -15,6 +15,8 @@ import CreateTemplateButton from './CreateTemplateButton';
 import NavigationMenuButton from './NavigationMenuButton';
 import TextEditorBar from './TextEditorBar';
 import BrushIcon from '@mui/icons-material/Brush';
+import tinymce from 'tinymce';
+import OrderContainerButton from './OrderContainerButton';
 
 const CardCreator = () => {
   const { state, dispatch } = useContext(AppState);
@@ -33,6 +35,8 @@ const CardCreator = () => {
   };
 
   const onDragEnd = (result: any) => {
+    tinymce.execCommand('mceRepaint', false, 'Filip');
+
     const { destination, source, draggableId } = result;
     if (!destination) return;
     if (destination.index === source.index) return;
@@ -76,6 +80,7 @@ const CardCreator = () => {
     button7: <TextAreaButton fn={setIsFocused} />,
     button8: <PlaceholderButton />,
     button9: <CreateTemplateButton />,
+    button10: <OrderContainerButton isHorizontal={isHorizontal} />,
   };
 
   return (
@@ -108,11 +113,12 @@ const CardCreator = () => {
               >
                 {state.buttonsOrder.map((key, id) => (
                   <Draggable draggableId={key} index={id} key={key}>
-                    {(provided) => (
+                    {(provided, snapshot) => (
                       <DraggableWrapper
                         provided={provided}
                         id={key}
                         innerRef={provided.innerRef}
+                        isDragging={snapshot.isDragging}
                       >
                         {buttons[key]}
                       </DraggableWrapper>

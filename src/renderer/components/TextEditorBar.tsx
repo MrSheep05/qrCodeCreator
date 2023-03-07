@@ -13,6 +13,7 @@ import {
   FormatColorText,
   Remove,
   Add,
+  Gradient,
 } from '@mui/icons-material/';
 import TextEditorButton from './TextEditorButton';
 import ColorPickerButton from './ColorPickerButton';
@@ -25,11 +26,17 @@ type Props = {
 };
 const TextEditorBar = ({ focus, setFocus }: Props) => {
   const [color, setColor] = useState<string>('#000000');
+  const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
   const { dispatch } = useContext(AppState);
   const [size, setSize] = useState<number>(8);
+
   useEffect(() => {
     tinymce.activeEditor?.execCommand('ForeColor', false, color);
   }, [color]);
+
+  useEffect(() => {
+    tinymce.activeEditor?.execCommand('HiliteColor', false, backgroundColor);
+  }, [backgroundColor]);
   return (
     <AppBar
       position="fixed"
@@ -124,6 +131,15 @@ const TextEditorBar = ({ focus, setFocus }: Props) => {
           <FormatColorText />
         </ColorPickerButton>
 
+        <ColorPickerButton
+          title={'Kolor tła'}
+          fn={({ target }) => {
+            setBackgroundColor(target.value);
+          }}
+        >
+          <Gradient />
+        </ColorPickerButton>
+
         <TextEditorButton title="Skreślenie tekstu" execCommand="Strikethrough">
           <StrikethroughS />
         </TextEditorButton>
@@ -151,8 +167,10 @@ const TextEditorBar = ({ focus, setFocus }: Props) => {
           <IconButton
             sx={{ marginLeft: 'auto' }}
             onClick={() => {
-              dispatch({ type: 'removeChild', payload: focus });
-              setFocus(undefined);
+              if (focus !== undefined) {
+                dispatch({ type: 'removeChild', payload: focus });
+                setFocus(undefined);
+              }
             }}
           >
             <Clear sx={{ color: 'red' }} />

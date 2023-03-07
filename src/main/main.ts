@@ -140,3 +140,7 @@ ipcMain.on('closing', (event, message) => {
   event.preventDefault();
   console.log(message);
 });
+
+ipcMain.on('reload', () => {
+  mainWindow!.reload();
+});

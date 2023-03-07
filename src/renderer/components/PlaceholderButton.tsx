@@ -1,4 +1,4 @@
-import CropFreeIcon from '@mui/icons-material/CropFree';
+import ExpandIcon from '@mui/icons-material/Expand';
 import { IconButton, Tooltip } from '@mui/material';
 import { useContext } from 'react';
 import { AppState } from 'renderer/utils/AppStateComponent';
@@ -18,7 +18,7 @@ const PlaceholderButton = () => {
           });
         }}
       >
-        <CropFreeIcon />
+        <ExpandIcon />
       </IconButton>
     </Tooltip>
   );

@@ -1,5 +1,4 @@
 import { createContext, useReducer } from 'react';
-import { Children } from 'react';
 
 interface Props {
   children: JSX.Element[] | JSX.Element;
@@ -25,6 +24,7 @@ type State = {
   children: ChildrenList;
   buttonsOrder: string[];
   index: number;
+  contentOrder: string[];
 };
 
 type AppStateContext = {
@@ -66,6 +66,7 @@ const initialButtonsOrder = [
   'button7',
   'button8',
   'button9',
+  'button10',
 ];
 
 export const AppState = createContext({} as AppStateContext);
@@ -78,6 +79,7 @@ export const initialState = {
     dataName: 'buttonsOrder',
   }),
   index: 0,
+  contentOrder: [],
 };
 
 export const reducer = (state: State, action: Action): any => {
@@ -93,6 +95,7 @@ export const reducer = (state: State, action: Action): any => {
         ...state,
         index: state.index + 1,
         children: { ...state.children, [state.index]: action.payload },
+        contentOrder: [...state.contentOrder, `${state.index}`],
       };
     }
 
@@ -103,11 +106,21 @@ export const reducer = (state: State, action: Action): any => {
     case 'removeChild': {
       if (typeof action.payload === 'number') {
         delete state.children[action.payload];
-        return { ...state, children: state.children };
+        return {
+          ...state,
+          children: state.children,
+          contentOrder: state.contentOrder.filter(
+            (value) => value !== `${action.payload}`
+          ),
+        };
       }
     }
 
     case 'contentOrder': {
+      return {
+        ...state,
+        contentOrder: action.payload,
+      };
     }
 
     default: {
