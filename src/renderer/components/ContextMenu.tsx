@@ -1,7 +1,7 @@
 import { Menu, MenuItem } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useContext } from 'react';
-import { AppState } from 'renderer/utils/AppStateComponent';
+import { Action, AppState } from 'renderer/utils/AppStateComponent';
 import { MouseDimension } from 'renderer/utils';
 
 type Props = {
@@ -9,6 +9,7 @@ type Props = {
   children?: JSX.Element | JSX.Element[];
   mouseContext: MouseDimension;
   setMouseContext: React.Dispatch<React.SetStateAction<MouseDimension>>;
+  action?: Action['type'];
 };
 
 const ContextMenu: React.FC<Props> = ({
@@ -16,6 +17,7 @@ const ContextMenu: React.FC<Props> = ({
   children,
   mouseContext,
   setMouseContext,
+  action = 'removeChild',
 }) => {
   const { dispatch } = useContext(AppState);
   return (
@@ -33,7 +35,7 @@ const ContextMenu: React.FC<Props> = ({
       <MenuItem
         sx={{ justifyContent: 'center' }}
         onClick={() => {
-          dispatch({ type: 'removeChild', payload: index });
+          dispatch({ type: action, payload: index });
           setMouseContext(null);
         }}
       >

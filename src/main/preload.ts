@@ -6,7 +6,7 @@ export type Channels = 'ipc-example' | 'closing' | 'reload';
 
 const electronHandler = {
   ipcRenderer: {
-    sendMessage(channel: Channels, args: unknown[]) {
+    sendMessage: async (channel: Channels, args: unknown[]) => {
       ipcRenderer.send(channel, args);
     },
     on(channel: Channels, func: (...args: unknown[]) => void) {

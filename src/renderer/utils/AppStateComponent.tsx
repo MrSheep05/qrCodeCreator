@@ -5,17 +5,19 @@ interface Props {
 }
 
 interface ChildrenList {
-  [key: string]: JSX.Element;
+  [key: string]: { content: JSX.Element; placement: undefined | string };
 }
-type Action = {
+export type Action = {
   type:
     | 'setRatio'
     | 'setQR'
     | 'appendChild'
     | 'setButtonsOrder'
     | 'removeChild'
-    | 'contentOrder';
-  payload: string | JSX.Element | string[] | number | undefined;
+    | 'contentOrder'
+    | 'appendColumn'
+    | 'removeColumn';
+  payload: string | JSX.Element | string[] | number | undefined | boolean;
 };
 
 type State = {
@@ -25,6 +27,7 @@ type State = {
   buttonsOrder: string[];
   index: number;
   contentOrder: string[];
+  columnItems: { [key: string]: string[] };
 };
 
 type AppStateContext = {
@@ -80,6 +83,7 @@ export const initialState = {
   }),
   index: 0,
   contentOrder: [],
+  isHorizontal: true,
 };
 
 export const reducer = (state: State, action: Action): any => {
@@ -94,8 +98,24 @@ export const reducer = (state: State, action: Action): any => {
       return {
         ...state,
         index: state.index + 1,
-        children: { ...state.children, [state.index]: action.payload },
+        children: {
+          ...state.children,
+          [state.index]: { content: action.payload },
+        },
         contentOrder: [...state.contentOrder, `${state.index}`],
+      };
+    }
+
+    case 'appendColumn': {
+      return {
+        ...state,
+        index: state.index + 1,
+        children: {
+          ...state.children,
+          [state.index]: { content: action.payload },
+        },
+        contentOrder: [...state.contentOrder, `${state.index}`],
+        columnItems: { ...state.columnItems, [state.index]: [] },
       };
     }
 
@@ -105,6 +125,20 @@ export const reducer = (state: State, action: Action): any => {
 
     case 'removeChild': {
       if (typeof action.payload === 'number') {
+        if (Object.keys(state.children[action.payload]).includes('placement')) {
+          const columnId = state.children[action.payload].placement;
+          delete state.children[action.payload];
+          return {
+            ...state,
+            children: state.children,
+            columnItems: {
+              ...state.columnItems,
+              [columnId!]: state.columnItems[columnId!].filter(
+                (itemKey: string) => itemKey !== `${action.payload}`
+              ),
+            },
+          };
+        }
         delete state.children[action.payload];
         return {
           ...state,
@@ -116,11 +150,49 @@ export const reducer = (state: State, action: Action): any => {
       }
     }
 
+    case 'removeColumn': {
+      if (
+        typeof action.payload === 'string' ||
+        typeof action.payload === 'number'
+      ) {
+        const childrenToRemove = state.columnItems[action.payload];
+        childrenToRemove.forEach((key) => delete state.children[key]);
+        delete state.columnItems[action.payload];
+
+        return {
+          ...state,
+          children: state.children,
+          columnItems: state.columnItems,
+          contentOrder: state.contentOrder.filter(
+            (value) => value !== `${action.payload}`
+          ),
+        };
+      }
+    }
+
     case 'contentOrder': {
-      return {
-        ...state,
-        contentOrder: action.payload,
-      };
+      // if (
+      //   Object.keys(action).includes('index') &&
+      //   Object.keys(action).includes('place')
+      // ) {
+      //   return {
+      //     ...state,
+      //     contentOrder: action.payload,
+      //     columnItems: Object.keys(action).includes('columnOrder')
+      //       ? {
+      //           ...state.columnItems,
+      //           ...(action.columnOrder as object),
+      //         }
+      //       : state.columnItems,
+      //     children: {
+      //       ...state.children,
+      //       [action.index!]: {
+      //         ...state.children[action.index!],
+      //         placement: action.placement,
+      //       },
+      //     },
+      //   };
+      // }
     }
 
     default: {

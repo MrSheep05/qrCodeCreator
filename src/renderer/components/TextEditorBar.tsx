@@ -15,16 +15,12 @@ import {
   Add,
   Gradient,
 } from '@mui/icons-material/';
-import TextEditorButton from './TextEditorButton';
-import ColorPickerButton from './ColorPickerButton';
+import TextEditorButton from './buttons/TextEditorButton';
+import ColorPickerButton from './buttons/ColorPickerButton';
 import tinymce from 'tinymce/tinymce';
 import { AppState } from 'renderer/utils/AppStateComponent';
 
-type Props = {
-  focus: number | undefined;
-  setFocus: React.Dispatch<React.SetStateAction<number | undefined>>;
-};
-const TextEditorBar = ({ focus, setFocus }: Props) => {
+const TextEditorBar = () => {
   const [color, setColor] = useState<string>('#000000');
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
   const { dispatch } = useContext(AppState);
@@ -162,20 +158,6 @@ const TextEditorBar = ({ focus, setFocus }: Props) => {
         <TextEditorButton title="Wyrównaj" execCommand="JustifyFull">
           <FormatAlignJustify />
         </TextEditorButton>
-
-        <Tooltip title="Usuń pole tekstowe">
-          <IconButton
-            sx={{ marginLeft: 'auto' }}
-            onClick={() => {
-              if (focus !== undefined) {
-                dispatch({ type: 'removeChild', payload: focus });
-                setFocus(undefined);
-              }
-            }}
-          >
-            <Clear sx={{ color: 'red' }} />
-          </IconButton>
-        </Tooltip>
       </Toolbar>
     </AppBar>
   );
