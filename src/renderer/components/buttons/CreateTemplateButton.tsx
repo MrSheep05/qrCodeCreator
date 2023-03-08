@@ -15,11 +15,20 @@ import { useState } from 'react';
 type Props = {
   cardView: React.RefObject<HTMLDivElement>;
 };
+
 const CreateTemplateButton = ({ cardView }: Props) => {
   const [isOpened, setIsOpened] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>('');
 
-  const saveToHtml = async () => {};
+  const saveToHtml = async () => {
+    const html = document.querySelector('html')!;
+    html.querySelectorAll('header').forEach((node) => node.remove());
+    html.querySelector("div[role='presentation']")?.remove();
+    const response = await window.electron.ipcRenderer.invoke('createFile', {
+      content: html.outerHTML,
+      fileName,
+    });
+  };
 
   return (
     <div>
@@ -34,7 +43,7 @@ const CreateTemplateButton = ({ cardView }: Props) => {
           <AddToPhotosIcon />
         </IconButton>
       </Tooltip>
-      <Dialog open={isOpened} onClose={() => setIsOpened(false)}>
+      <Dialog open={isOpened} onClose={() => setIsOpened(false)} id="dialog">
         <DialogTitle>Stwórz szablon</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -64,9 +73,11 @@ const CreateTemplateButton = ({ cardView }: Props) => {
           </Button>
           <Button
             onClick={async () => {
-              saveToHtml();
               setIsOpened(false);
-              // window.electron.ipcRenderer.sendMessage('reload', []);
+              const isSuccess = await saveToHtml();
+              // if (isSuccess) {
+              // }
+              window.electron.ipcRenderer.sendMessage('reload', []);
             }}
           >
             Zapisz

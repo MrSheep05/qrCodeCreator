@@ -15,12 +15,14 @@ const CardView = ({ orientation, color, innerRef }: props) => {
 
   const onDragEnd = (result: any) => {
     const { destination, source, draggableId } = result;
+
     if (!destination) return;
     if (
       destination.index === source.index &&
       destination.droppableId === source.droppableId
     )
       return;
+    if (destination.droppableId === draggableId) return;
 
     if (destination.droppableId === 'card' && source.droppableId === 'card') {
       const newOrder = state.contentOrder;
@@ -29,47 +31,63 @@ const CardView = ({ orientation, color, innerRef }: props) => {
       dispatch({
         type: 'contentOrder',
         payload: newOrder,
+        columns: state.columnItems,
+        place: state.children,
+      });
+      return;
+    }
+    if (
+      source.droppableId === 'card' ||
+      (destination.droppableId === 'card' &&
+        Object.keys(state.columnItems).includes(destination.droppableId))
+    ) {
+      const condition =
+        Object.keys(state.columnItems).includes(destination.droppableId) &&
+        source.droppableId === 'card';
+      const newOrder = state.contentOrder;
+
+      const columnIndex = condition
+        ? destination.droppableId
+        : source.droppableId;
+      const newColumns = state.columnItems[columnIndex];
+
+      if (condition) {
+        newColumns.splice(destination.index, 0, draggableId);
+        newOrder.splice(source.index, 1);
+      } else {
+        newOrder.splice(destination.index, 0, draggableId);
+        newColumns.splice(source.index, 1);
+      }
+      dispatch({
+        type: 'contentOrder',
+        payload: newOrder,
+        columns: { ...state.columnItems, [columnIndex]: newColumns },
+        place: {
+          ...state.children,
+          [draggableId]: {
+            ...state.children[draggableId],
+            placement: columnIndex,
+          },
+        },
       });
       return;
     }
 
-    // if (
-    //   destination.droppableId === 'card' &&
-    //   source.droppableId !== destination.droppableId
-    // ) {
-    //   const newColumnItems = state.columnItems[source.droppableId];
-    //   newColumnItems.splice(source.index, 1);
-
-    //   const newOrder = state.contentOrder;
-    //   newOrder.splice(destination.index, 0, draggableId);
-    //   dispatch({
-    //     type: 'contentOrder',
-    //     payload: newOrder,
-    //     columnOrder: { [source.droppableId]: newColumnItems },
-    //     index: draggableId,
-    //     placement: undefined,
-    //   });
-    //   return;
-    // }
-
-    // if (
-    //   destination.droppableId !== source.droppableId &&
-    //   source.droppableId === 'card'
-    // ) {
-    //   const newColumnItems = state.columnItems[destination.droppableId];
-    //   newColumnItems.splice(destination.index, 0, draggableId);
-
-    //   const newOrder = state.contentOrder;
-    //   newOrder.splice(source.index, 1);
-    //   dispatch({
-    //     type: 'contentOrder',
-    //     payload: newOrder,
-    //     columnOrder: { [destination.droppableId]: newColumnItems },
-    //     index: draggableId,
-    //     placement: destination.droppableId,
-    //   });
-    //   return;
-    // }
+    if (
+      source.droppableId === destination.droppableId &&
+      destination.draggableId !== 'card'
+    ) {
+      const newColumn = state.columnItems[source.droppableId];
+      newColumn.splice(source.index, 1);
+      newColumn.splice(destination.index, 0, draggableId);
+      dispatch({
+        type: 'contentOrder',
+        payload: state.contentOrder,
+        columns: { ...state.columnItems, [source.droppableId]: newColumn },
+        place: state.children,
+      });
+      return;
+    }
   };
 
   return (
@@ -97,13 +115,15 @@ const CardView = ({ orientation, color, innerRef }: props) => {
             >
               {state.contentOrder
                 ? state.contentOrder.map((key, index) => (
-                    <Draggable draggableId={key} index={index} key={key}>
-                      {(provided, snapshot) => (
+                    <Draggable
+                      draggableId={`${key}`}
+                      index={index}
+                      key={`c${key}`}
+                    >
+                      {(provided) => (
                         <DraggableWrapper
                           provided={provided}
-                          id={key}
                           innerRef={provided.innerRef}
-                          isDragging={snapshot.isDragging}
                         >
                           {state.children[key].content}
                         </DraggableWrapper>

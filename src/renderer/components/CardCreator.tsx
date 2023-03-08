@@ -113,12 +113,10 @@ const CardCreator = () => {
               >
                 {state.buttonsOrder.map((key, id) => (
                   <Draggable draggableId={key} index={id} key={key}>
-                    {(provided, snapshot) => (
+                    {(provided) => (
                       <DraggableWrapper
                         provided={provided}
-                        id={key}
                         innerRef={provided.innerRef}
-                        isDragging={snapshot.isDragging}
                       >
                         {buttons[key]}
                       </DraggableWrapper>

@@ -1,10 +1,13 @@
 import { MenuItem, TextField, Tooltip } from '@mui/material';
 import { Resizable } from 're-resizable';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import useResizing from 'renderer/hooks/useResizing';
 import { MouseDimension, contextMenuEventProvider } from 'renderer/utils';
 import ContextMenu from './ContextMenu';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
+import { Draggable } from 'react-beautiful-dnd';
+import { AppState } from 'renderer/utils/AppStateComponent';
+import DraggableWrapper from './DraggableWrapper';
 
 type Props = {
   image: File;
@@ -15,6 +18,7 @@ const ImageContainer = ({ image, index }: Props) => {
   const [mouseContext, setMouseContext] = useState<MouseDimension>(null);
   const [resizingStyle, setIsResizing] = useResizing();
   const [imgId, setImgId] = useState<string>('');
+  const { state } = useContext(AppState);
 
   useEffect(() => {
     const img = new Image();

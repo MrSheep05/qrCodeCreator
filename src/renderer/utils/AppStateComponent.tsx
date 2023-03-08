@@ -18,6 +18,10 @@ export type Action = {
     | 'appendColumn'
     | 'removeColumn';
   payload: string | JSX.Element | string[] | number | undefined | boolean;
+  columns?: { [key: string]: string[] };
+  place?: {
+    [key: string]: { content: JSX.Element; placement: string | undefined };
+  };
 };
 
 type State = {
@@ -171,28 +175,14 @@ export const reducer = (state: State, action: Action): any => {
     }
 
     case 'contentOrder': {
-      // if (
-      //   Object.keys(action).includes('index') &&
-      //   Object.keys(action).includes('place')
-      // ) {
-      //   return {
-      //     ...state,
-      //     contentOrder: action.payload,
-      //     columnItems: Object.keys(action).includes('columnOrder')
-      //       ? {
-      //           ...state.columnItems,
-      //           ...(action.columnOrder as object),
-      //         }
-      //       : state.columnItems,
-      //     children: {
-      //       ...state.children,
-      //       [action.index!]: {
-      //         ...state.children[action.index!],
-      //         placement: action.placement,
-      //       },
-      //     },
-      //   };
-      // }
+      if (Object.keys(action).includes('columns')) {
+        return {
+          ...state,
+          contentOrder: action.payload,
+          columnItems: action.columns,
+          children: action.place,
+        };
+      }
     }
 
     default: {

@@ -1,8 +1,13 @@
+import { CSSProperties } from '@mui/styled-engine';
 import { Resizable } from 're-resizable';
 import { useContext, useEffect, useState } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import useResizing from 'renderer/hooks/useResizing';
-import { contextMenuEventProvider, MouseDimension } from 'renderer/utils';
+import {
+  contextMenuEventProvider,
+  draggingOverStyle,
+  MouseDimension,
+} from 'renderer/utils';
 import { AppState } from 'renderer/utils/AppStateComponent';
 import ContextMenu from './ContextMenu';
 import DraggableWrapper from './DraggableWrapper';
@@ -20,7 +25,6 @@ const OrderContainer = ({ index, isHorizontal }: Props) => {
   const [resizingStyle, setResizing] = useResizing();
   const [mouseContext, setMouseContext] = useState<MouseDimension>(null);
   const { state } = useContext(AppState);
-
   return (
     <div>
       <Resizable
@@ -50,21 +54,26 @@ const OrderContainer = ({ index, isHorizontal }: Props) => {
             droppableId={`${index}`}
             direction={isHorizontal ? 'vertical' : 'horizontal'}
           >
-            {(provided) => (
+            {(provided, snapshot) => (
               <div
                 {...provided.droppableProps}
                 ref={provided.innerRef}
-                style={{ width: '100%', height: '100%' }}
+                style={{
+                  ...draggingOverStyle(snapshot.isDraggingOver),
+                  display: 'flex',
+                  flexDirection: isHorizontal ? 'column' : 'row',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  gap: '1rem',
+                }}
               >
                 {Object.keys(state.columnItems).includes(`${index}`)
                   ? state.columnItems[`${index}`].map((key, index) => (
                       <Draggable draggableId={key} index={index} key={key}>
-                        {(provided, snapshot) => (
+                        {(provided) => (
                           <DraggableWrapper
                             provided={provided}
-                            id={key}
                             innerRef={provided.innerRef}
-                            isDragging={snapshot.isDragging}
                           >
                             {state.children[key].content}
                           </DraggableWrapper>

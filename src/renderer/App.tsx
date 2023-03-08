@@ -2,6 +2,7 @@ import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import CardCreator from './components/CardCreator';
 import AppStateComponent from './utils/AppStateComponent';
 import './App.css';
+import TemplatesView from './components/TemplatesView';
 
 export default function App() {
   return (
@@ -9,6 +10,7 @@ export default function App() {
       <Router>
         <Routes>
           <Route path="/" element={<CardCreator></CardCreator>} />
+          <Route path="/templates" element={<TemplatesView />} />
         </Routes>
       </Router>
     </AppStateComponent>

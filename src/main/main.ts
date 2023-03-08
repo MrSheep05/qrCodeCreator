@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { ensureDir, lstatSync, outputFile, existsSync } from 'fs-extra';
 
 class AppUpdater {
   constructor() {
@@ -143,4 +144,24 @@ ipcMain.on('closing', (event, message) => {
 
 ipcMain.on('reload', () => {
   mainWindow!.reload();
+});
+
+ipcMain.handle('createFile', (_, { fileName, content }) => {
+  const userDataPath = app.getPath('userData');
+  const templatesDir = path.join(userDataPath, 'Templates');
+  const name = fileName === '' ? 'Bez_nazwy.html' : `${fileName}.html`;
+  const filePath = path.join(templatesDir, name);
+  ensureDir(templatesDir);
+  if (existsSync(filePath)) {
+    if (lstatSync(filePath).isFile()) {
+      alert(`Plik o nazwie ${name} istnieje!`);
+      return false;
+    }
+  }
+
+  outputFile(filePath, content, () => {
+    return false;
+  });
+
+  return true;
 });
