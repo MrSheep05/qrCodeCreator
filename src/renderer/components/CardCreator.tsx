@@ -1,5 +1,5 @@
 import { AppBar, Toolbar } from '@mui/material';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import CardView from './CardView';
 import { AppState } from 'renderer/utils/AppStateComponent';
 import { Droppable, Draggable, DragDropContext } from 'react-beautiful-dnd';

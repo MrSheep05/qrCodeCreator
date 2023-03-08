@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 type Props = {
   cardView: React.RefObject<HTMLDivElement>;
@@ -19,19 +19,26 @@ type Props = {
 const CreateTemplateButton = ({ cardView }: Props) => {
   const [isOpened, setIsOpened] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>('');
+  const cloneRef = useRef<HTMLDivElement>(null);
 
   const saveToHtml = async () => {
-    const html = document.querySelector('html')!;
+    const clone = document.querySelector('html')!.cloneNode(true);
+    const html = cloneRef.current!;
+    html.innerHTML = '';
+    html.appendChild(clone);
     html.querySelectorAll('header').forEach((node) => node.remove());
     html.querySelector("div[role='presentation']")?.remove();
     const response = await window.electron.ipcRenderer.invoke('createFile', {
-      content: html.outerHTML,
+      content: html.querySelector('html')!.outerHTML,
       fileName,
     });
+
+    return response;
   };
 
   return (
     <div>
+      <div style={{ display: 'none' }} ref={cloneRef}></div>
       <Tooltip title="Dodaj szablon">
         <IconButton
           aria-describedby="colorPick"
@@ -73,11 +80,11 @@ const CreateTemplateButton = ({ cardView }: Props) => {
           </Button>
           <Button
             onClick={async () => {
-              setIsOpened(false);
               const isSuccess = await saveToHtml();
-              // if (isSuccess) {
-              // }
-              window.electron.ipcRenderer.sendMessage('reload', []);
+              if (isSuccess) {
+                setIsOpened(false);
+                window.electron.ipcRenderer.sendMessage('reload', []);
+              }
             }}
           >
             Zapisz
