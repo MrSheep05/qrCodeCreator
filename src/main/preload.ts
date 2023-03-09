@@ -8,7 +8,8 @@ export type Channels =
   | 'reload'
   | 'getPath'
   | 'joinPath'
-  | 'createFile';
+  | 'createFile'
+  | 'getContent';
 
 const electronHandler = {
   ipcRenderer: {

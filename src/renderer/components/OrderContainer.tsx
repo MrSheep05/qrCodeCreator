@@ -18,7 +18,7 @@ type Props = {
 };
 const initialSize = { width: 100, height: 100 };
 
-const OrderContainer = ({ index, isHorizontal }: Props) => {
+function OrderContainer({ index, isHorizontal }: Props) {
   const [style, setStyle] = useState<{ width: number; height: number }>(
     initialSize
   );
@@ -95,6 +95,6 @@ const OrderContainer = ({ index, isHorizontal }: Props) => {
       />
     </div>
   );
-};
+}
 
 export default OrderContainer;

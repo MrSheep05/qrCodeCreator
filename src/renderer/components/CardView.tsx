@@ -4,12 +4,13 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import useRatio from 'renderer/hooks/useRatio';
 import { AppState } from 'renderer/utils/AppStateComponent';
 import DraggableWrapper from './DraggableWrapper';
+
 type props = {
   orientation: Boolean;
   color: string;
   innerRef: React.RefObject<HTMLDivElement>;
 };
-const CardView = ({ orientation, color, innerRef }: props) => {
+function CardView({ orientation, color, innerRef }: props) {
   const [width, height] = useRatio(orientation);
   const { state, dispatch } = useContext(AppState);
 
@@ -22,7 +23,15 @@ const CardView = ({ orientation, color, innerRef }: props) => {
       destination.droppableId === source.droppableId
     )
       return;
+
     if (destination.droppableId === draggableId) return;
+
+    const isDestinationColumn = Object.keys(state.columnItems).includes(
+      destination.droppableId
+    );
+    const isSourceColumn = Object.keys(state.columnItems).includes(
+      source.droppableId
+    );
 
     if (destination.droppableId === 'card' && source.droppableId === 'card') {
       const newOrder = state.contentOrder;
@@ -36,10 +45,50 @@ const CardView = ({ orientation, color, innerRef }: props) => {
       });
       return;
     }
+
+    if (isDestinationColumn && isSourceColumn) {
+      if (destination.droppableId === source.droppableId) {
+        const newColumn = state.columnItems[destination.droppableId];
+        newColumn.splice(source.index, 1);
+        newColumn.splice(destination.index, 0, draggableId);
+        dispatch({
+          type: 'contentOrder',
+          payload: state.contentOrder,
+          columns: {
+            ...state.columnItems,
+            [destination.droppableId]: newColumn,
+          },
+          place: state.children,
+        });
+        return;
+      }
+      const sourceColumn = state.columnItems[source.droppableId];
+      const destinationColumn = state.columnItems[destination.droppableId];
+
+      sourceColumn.splice(source.index, 1);
+      destinationColumn.splice(destination.index, 0, draggableId);
+      dispatch({
+        type: 'contentOrder',
+        payload: state.contentOrder,
+        columns: {
+          ...state.columnItems,
+          [source.droppableId]: sourceColumn,
+          [destination.droppableId]: destinationColumn,
+        },
+        place: {
+          ...state.children,
+          [draggableId]: {
+            ...state.children[draggableId],
+            placement: destination.droppableId,
+          },
+        },
+      });
+      return;
+    }
+
     if (
-      source.droppableId === 'card' ||
-      (destination.droppableId === 'card' &&
-        Object.keys(state.columnItems).includes(destination.droppableId))
+      (isDestinationColumn && source.droppableId === 'card') ||
+      (isSourceColumn && destination.droppableId === 'card')
     ) {
       const condition =
         Object.keys(state.columnItems).includes(destination.droppableId) &&
@@ -69,22 +118,6 @@ const CardView = ({ orientation, color, innerRef }: props) => {
             placement: columnIndex,
           },
         },
-      });
-      return;
-    }
-
-    if (
-      source.droppableId === destination.droppableId &&
-      destination.draggableId !== 'card'
-    ) {
-      const newColumn = state.columnItems[source.droppableId];
-      newColumn.splice(source.index, 1);
-      newColumn.splice(destination.index, 0, draggableId);
-      dispatch({
-        type: 'contentOrder',
-        payload: state.contentOrder,
-        columns: { ...state.columnItems, [source.droppableId]: newColumn },
-        place: state.children,
       });
       return;
     }
@@ -139,6 +172,6 @@ const CardView = ({ orientation, color, innerRef }: props) => {
       </div>
     </DragDropContext>
   );
-};
+}
 
 export default CardView;

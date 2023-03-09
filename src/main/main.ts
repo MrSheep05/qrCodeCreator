@@ -12,9 +12,16 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import {
+  ensureDir,
+  lstatSync,
+  outputFile,
+  existsSync,
+  readdirSync,
+  readFileSync,
+} from 'fs-extra';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { ensureDir, lstatSync, outputFile, existsSync } from 'fs-extra';
 
 class AppUpdater {
   constructor() {
@@ -164,4 +171,22 @@ ipcMain.handle('createFile', (_, { fileName, content }) => {
   });
 
   return true;
+});
+
+ipcMain.handle('getContent', async () => {
+  const isHTML = /.*\.html/gm;
+  const userDataPath = app.getPath('userData');
+  const templatesDir = path.join(userDataPath, 'Templates');
+
+  const htmlFiles = readdirSync(templatesDir).filter((file) =>
+    isHTML.test(file)
+  );
+  const response = htmlFiles.reduce((prev, name) => {
+    const content: string = readFileSync(path.join(templatesDir, name), {
+      encoding: 'utf8',
+    });
+    return { ...prev, [name.replace('.html', '')]: content };
+  }, {});
+
+  return response;
 });

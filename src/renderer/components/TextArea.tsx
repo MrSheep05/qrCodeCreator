@@ -9,7 +9,7 @@ import ContextMenu from './ContextMenu';
 type Props = {
   index: number;
 };
-const TextArea = ({ index }: Props) => {
+function TextArea({ index }: Props) {
   const editorRef = useRef<any>(null);
   const holder = useRef<any>(null);
   const [mouseContext, setMouseContext] = useState<MouseDimension>(null);
@@ -61,7 +61,7 @@ const TextArea = ({ index }: Props) => {
               inline: true,
             }}
             apiKey="w1oqeoai6gzdzrggfs57eka5qds7sqi4am42b1o8392qgrrx"
-          ></Editor>
+          />
         </div>
       </Resizable>
       <ContextMenu
@@ -71,6 +71,6 @@ const TextArea = ({ index }: Props) => {
       />
     </div>
   );
-};
+}
 
 export default TextArea;

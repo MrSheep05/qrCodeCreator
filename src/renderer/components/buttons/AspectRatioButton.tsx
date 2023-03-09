@@ -3,7 +3,7 @@ import { useState, useContext } from 'react';
 import AspectRatioIcon from '@mui/icons-material/AspectRatio';
 import { AppState } from 'renderer/utils/AppStateComponent';
 
-const AspectRatioButton = () => {
+function AspectRatioButton() {
   const { state, dispatch } = useContext(AppState);
   const [isOpened, setIsOpened] = useState<boolean>(false);
   const [anchorPopover, setAnchorPopover] = useState<any>();
@@ -54,17 +54,17 @@ const AspectRatioButton = () => {
             type="number"
             defaultValue={state.selectedRatio.split(':')[0]}
             onChange={(event) => applyNumber(event, 0)}
-          ></input>
+          />
           :
           <input
             type="number"
             defaultValue={state.selectedRatio.split(':')[1]}
             onChange={(event) => applyNumber(event, 1)}
-          ></input>
+          />
         </div>
       </Popover>
     </div>
   );
-};
+}
 
 export default AspectRatioButton;

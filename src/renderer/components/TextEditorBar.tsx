@@ -15,12 +15,12 @@ import {
   Add,
   Gradient,
 } from '@mui/icons-material/';
-import TextEditorButton from './buttons/TextEditorButton';
-import ColorPickerButton from './buttons/ColorPickerButton';
 import tinymce from 'tinymce/tinymce';
 import { AppState } from 'renderer/utils/AppStateComponent';
+import TextEditorButton from './buttons/TextEditorButton';
+import ColorPickerButton from './buttons/ColorPickerButton';
 
-const TextEditorBar = () => {
+function TextEditorBar() {
   const [color, setColor] = useState<string>('#000000');
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
   const { dispatch } = useContext(AppState);
@@ -87,7 +87,7 @@ const TextEditorBar = () => {
 
               tinymce.activeEditor?.execCommand('FontSize', false, `${size}px`);
             }}
-          ></input>
+          />
           <IconButton
             onClick={() => {
               if (size < 30) {
@@ -118,17 +118,17 @@ const TextEditorBar = () => {
         </TextEditorButton>
 
         <ColorPickerButton
-          title={'Kolor tekstu'}
+          title="Kolor tekstu"
           fn={({ target }) => {
             setColor(target.value);
           }}
-          defaultValue={'#000000'}
+          defaultValue="#000000"
         >
           <FormatColorText />
         </ColorPickerButton>
 
         <ColorPickerButton
-          title={'Kolor tła'}
+          title="Kolor tła"
           fn={({ target }) => {
             setBackgroundColor(target.value);
           }}
@@ -161,6 +161,6 @@ const TextEditorBar = () => {
       </Toolbar>
     </AppBar>
   );
-};
+}
 
 export default TextEditorBar;

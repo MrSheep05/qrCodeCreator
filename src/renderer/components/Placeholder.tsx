@@ -5,7 +5,7 @@ import useResizing from 'renderer/hooks/useResizing';
 import { MouseDimension, contextMenuEventProvider } from 'renderer/utils';
 import ContextMenu from './ContextMenu';
 
-const Placeholder = ({ index }: { index: number }) => {
+function Placeholder({ index }: { index: number }) {
   const deafult = { width: 100, height: 100 };
   const [style, setStyle] = useState<{
     width: number;
@@ -39,7 +39,7 @@ const Placeholder = ({ index }: { index: number }) => {
         }}
         style={resizingStyle}
       >
-        <div style={style}></div>
+        <div style={style} />
         <ContextMenu
           index={index}
           setMouseContext={setMouseContext}
@@ -59,6 +59,6 @@ const Placeholder = ({ index }: { index: number }) => {
       </Resizable>
     </div>
   );
-};
+}
 
 export default Placeholder;

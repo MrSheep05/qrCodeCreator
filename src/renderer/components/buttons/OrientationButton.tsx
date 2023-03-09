@@ -2,7 +2,7 @@ import { IconButton, Tooltip } from '@mui/material';
 import CropLandscapeIcon from '@mui/icons-material/CropLandscape';
 import CropPortraitIcon from '@mui/icons-material/CropPortrait';
 
-const OrientationButton = ({
+function OrientationButton({
   fn,
   isDisabled,
   type,
@@ -10,7 +10,7 @@ const OrientationButton = ({
   fn: () => void;
   isDisabled: boolean;
   type: 'horizontal' | 'vertical';
-}) => {
+}) {
   return (
     <Tooltip title={type === 'horizontal' ? 'Poziomo' : 'Pionowo'}>
       <div>
@@ -20,6 +20,6 @@ const OrientationButton = ({
       </div>
     </Tooltip>
   );
-};
+}
 
 export default OrientationButton;

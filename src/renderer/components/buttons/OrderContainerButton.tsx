@@ -4,14 +4,14 @@ import { useContext } from 'react';
 import { AppState } from 'renderer/utils/AppStateComponent';
 import OrderContainer from '../OrderContainer';
 
-const OrderContainerButton = ({ isHorizontal }: { isHorizontal: boolean }) => {
+function OrderContainerButton({ isHorizontal }: { isHorizontal: boolean }) {
   const { state, dispatch } = useContext(AppState);
   return (
     <Tooltip title={`Wstaw ${isHorizontal ? 'kolumnę' : 'wiersz'}`}>
       <IconButton
         size="small"
         onClick={() => {
-          const index = state.index;
+          const { index } = state;
           dispatch({
             type: 'appendColumn',
             payload: (
@@ -24,6 +24,6 @@ const OrderContainerButton = ({ isHorizontal }: { isHorizontal: boolean }) => {
       </IconButton>
     </Tooltip>
   );
-};
+}
 
 export default OrderContainerButton;

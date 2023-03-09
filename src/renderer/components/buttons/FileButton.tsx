@@ -4,7 +4,7 @@ import { useContext, useRef } from 'react';
 import { AppState } from 'renderer/utils/AppStateComponent';
 import ImageContainer from '../ImageContainer';
 
-const FileButton = () => {
+function FileButton() {
   const { dispatch, state } = useContext(AppState);
   const fileInput = useRef<HTMLInputElement>(null);
   const imageTypes = ['image/gif', 'image/jpeg', 'image/png'];
@@ -26,7 +26,7 @@ const FileButton = () => {
               imageTypes.includes(file.type)
             );
             target.value = '';
-            const index = state.index;
+            const { index } = state;
 
             dispatch({
               type: 'appendChild',
@@ -43,6 +43,6 @@ const FileButton = () => {
       </Tooltip>
     </div>
   );
-};
+}
 
 export default FileButton;

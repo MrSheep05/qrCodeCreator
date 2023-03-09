@@ -16,7 +16,7 @@ type Props = {
   cardView: React.RefObject<HTMLDivElement>;
 };
 
-const CreateTemplateButton = ({ cardView }: Props) => {
+function CreateTemplateButton({ cardView }: Props) {
   const [isOpened, setIsOpened] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>('');
   const cloneRef = useRef<HTMLDivElement>(null);
@@ -38,7 +38,7 @@ const CreateTemplateButton = ({ cardView }: Props) => {
 
   return (
     <div>
-      <div style={{ display: 'none' }} ref={cloneRef}></div>
+      <div style={{ display: 'none' }} ref={cloneRef} />
       <Tooltip title="Dodaj szablon">
         <IconButton
           aria-describedby="colorPick"
@@ -93,6 +93,6 @@ const CreateTemplateButton = ({ cardView }: Props) => {
       </Dialog>
     </div>
   );
-};
+}
 
 export default CreateTemplateButton;

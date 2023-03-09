@@ -3,17 +3,17 @@ import { Resizable } from 're-resizable';
 import { useContext, useEffect, useState } from 'react';
 import useResizing from 'renderer/hooks/useResizing';
 import { MouseDimension, contextMenuEventProvider } from 'renderer/utils';
-import ContextMenu from './ContextMenu';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import { Draggable } from 'react-beautiful-dnd';
 import { AppState } from 'renderer/utils/AppStateComponent';
+import ContextMenu from './ContextMenu';
 import DraggableWrapper from './DraggableWrapper';
 
 type Props = {
   image: File;
   index: number;
 };
-const ImageContainer = ({ image, index }: Props) => {
+function ImageContainer({ image, index }: Props) {
   const [size, setSize] = useState<{ width: number; height: number }>();
   const [mouseContext, setMouseContext] = useState<MouseDimension>(null);
   const [resizingStyle, setIsResizing] = useResizing();
@@ -52,11 +52,7 @@ const ImageContainer = ({ image, index }: Props) => {
           setIsResizing(false);
         }}
       >
-        <img
-          src={URL.createObjectURL(image)}
-          style={size}
-          title={`${imgId}`}
-        ></img>
+        <img src={URL.createObjectURL(image)} style={size} title={`${imgId}`} />
       </Resizable>
       <ContextMenu
         index={index}
@@ -75,13 +71,13 @@ const ImageContainer = ({ image, index }: Props) => {
               title="ID"
               placeholder="[ID]"
               onChange={({ target }) => setImgId(target.value)}
-            ></TextField>
+            />
             <FingerprintIcon />
           </MenuItem>
         </Tooltip>
       </ContextMenu>
     </div>
   );
-};
+}
 
 export default ImageContainer;

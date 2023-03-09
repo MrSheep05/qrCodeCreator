@@ -1,8 +1,10 @@
 import { AppBar, Toolbar } from '@mui/material';
 import { useContext, useRef, useState } from 'react';
-import CardView from './CardView';
 import { AppState } from 'renderer/utils/AppStateComponent';
 import { Droppable, Draggable, DragDropContext } from 'react-beautiful-dnd';
+import BrushIcon from '@mui/icons-material/Brush';
+import tinymce from 'tinymce';
+import CardView from './CardView';
 import AspectRatioButton from './buttons/AspectRatioButton';
 import ColorPickerButton from './buttons/ColorPickerButton';
 import FileButton from './buttons/FileButton';
@@ -14,11 +16,9 @@ import PlaceholderButton from './buttons/PlaceholderButton';
 import CreateTemplateButton from './buttons/CreateTemplateButton';
 import NavigationMenuButton from './buttons/NavigationMenuButton';
 import TextEditorBar from './TextEditorBar';
-import BrushIcon from '@mui/icons-material/Brush';
-import tinymce from 'tinymce';
 import OrderContainerButton from './buttons/OrderContainerButton';
 
-const CardCreator = () => {
+function CardCreator() {
   const { state, dispatch } = useContext(AppState);
   const [color, setColor] = useState<string>('#ffffff');
   const cardViewRef = useRef<HTMLDivElement>(null);
@@ -71,9 +71,9 @@ const CardCreator = () => {
     ),
 
     button4: <AspectRatioButton />,
-    button5: <QRCodeButton></QRCodeButton>,
+    button5: <QRCodeButton />,
     button6: (
-      <ColorPickerButton fn={colorChangeFn} title={'Kolor karty'}>
+      <ColorPickerButton fn={colorChangeFn} title="Kolor karty">
         <BrushIcon />
       </ColorPickerButton>
     ),
@@ -136,11 +136,11 @@ const CardCreator = () => {
         orientation={isHorizontal}
         color={color}
         innerRef={cardViewRef}
-      ></CardView>
+      />
 
       <TextEditorBar />
     </div>
   );
-};
+}
 
 export default CardCreator;

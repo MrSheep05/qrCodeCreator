@@ -36,7 +36,7 @@ type Inputs = {
   isValid: boolean;
 }[];
 
-const QRCodeButton = () => {
+function QRCodeButton() {
   const { state, dispatch } = useContext(AppState);
   const [isOpened, setIsOpened] = useState<boolean>(false);
   const [inputsValues, setInputsValues] = useState<inputValue>(initialValues);
@@ -134,7 +134,7 @@ const QRCodeButton = () => {
               );
               if (isCorrect) {
                 const userData = Object.keys(inputsValues).reduce(
-                  (previous, key) => `${previous} ` + inputsValues[key].value,
+                  (previous, key) => `${previous} ${inputsValues[key].value}`,
                   ''
                 );
                 dispatch({ type: 'setQR', payload: userData });
@@ -149,6 +149,6 @@ const QRCodeButton = () => {
       </Dialog>
     </div>
   );
-};
+}
 
 export default QRCodeButton;

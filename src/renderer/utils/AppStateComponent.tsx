@@ -16,7 +16,8 @@ export type Action = {
     | 'removeChild'
     | 'contentOrder'
     | 'appendColumn'
-    | 'removeColumn';
+    | 'removeColumn'
+    | 'setLocation';
   payload: string | JSX.Element | string[] | number | undefined | boolean;
   columns?: { [key: string]: string[] };
   place?: {
@@ -32,12 +33,26 @@ type State = {
   index: number;
   contentOrder: string[];
   columnItems: { [key: string]: string[] };
+  location: string;
 };
 
 type AppStateContext = {
   state: State;
   dispatch: (action: Action) => void;
 };
+
+const initialButtonsOrder = [
+  'button1',
+  'button2',
+  'button3',
+  'button4',
+  'button5',
+  'button6',
+  'button7',
+  'button8',
+  'button9',
+  'button10',
+];
 
 const saveInLocalStorage = ({
   data,
@@ -63,19 +78,6 @@ const getFromLocalStorage = ({
   return ifFailed;
 };
 
-const initialButtonsOrder = [
-  'button1',
-  'button2',
-  'button3',
-  'button4',
-  'button5',
-  'button6',
-  'button7',
-  'button8',
-  'button9',
-  'button10',
-];
-
 export const AppState = createContext({} as AppStateContext);
 
 export const initialState = {
@@ -87,7 +89,7 @@ export const initialState = {
   }),
   index: 0,
   contentOrder: [],
-  isHorizontal: true,
+  location: '',
 };
 
 export const reducer = (state: State, action: Action): any => {
@@ -172,6 +174,7 @@ export const reducer = (state: State, action: Action): any => {
           ),
         };
       }
+      break;
     }
 
     case 'contentOrder': {
@@ -183,6 +186,11 @@ export const reducer = (state: State, action: Action): any => {
           children: action.place,
         };
       }
+      break;
+    }
+
+    case 'setLocation': {
+      return { ...state, location: action.payload };
     }
 
     default: {
@@ -191,7 +199,7 @@ export const reducer = (state: State, action: Action): any => {
   }
 };
 
-const AppStateComponent = ({ children }: Props) => {
+function AppStateComponent({ children }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   window.onclose = () => {
@@ -207,6 +215,6 @@ const AppStateComponent = ({ children }: Props) => {
       {children}
     </AppState.Provider>
   );
-};
+}
 
 export default AppStateComponent;

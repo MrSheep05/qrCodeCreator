@@ -9,7 +9,7 @@ type Style = {
   fontSize: number;
 };
 
-const QRContainer = ({ value, index }: { value: string; index: number }) => {
+function QRContainer({ value, index }: { value: string; index: number }) {
   const [style, setStyle] = useState<Style>({ size: 10, fontSize: 8 });
   const canvas = useRef<HTMLCanvasElement>(null);
   const [mouseContext, setMouseContext] = useState<MouseDimension>(null);
@@ -39,7 +39,7 @@ const QRContainer = ({ value, index }: { value: string; index: number }) => {
       <canvas
         style={{ height: `${style.size}vmin`, width: `${style.size}vmin` }}
         ref={canvas}
-      ></canvas>
+      />
       <span>{value}</span>
       <ContextMenu
         mouseContext={mouseContext}
@@ -73,5 +73,5 @@ const QRContainer = ({ value, index }: { value: string; index: number }) => {
       </ContextMenu>
     </div>
   );
-};
+}
 export default QRContainer;

@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { AppState } from 'renderer/utils/AppStateComponent';
 import TextArea from '../TextArea';
 
-const TextFieldButton = () => {
+function TextFieldButton() {
   const { state, dispatch } = useContext(AppState);
 
   return (
@@ -12,7 +12,7 @@ const TextFieldButton = () => {
       <IconButton
         size="small"
         onClick={() => {
-          const index = state.index;
+          const { index } = state;
           dispatch({
             type: 'appendChild',
             payload: <TextArea key={index} index={index} />,
@@ -23,6 +23,6 @@ const TextFieldButton = () => {
       </IconButton>
     </Tooltip>
   );
-};
+}
 
 export default TextFieldButton;

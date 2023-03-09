@@ -9,7 +9,7 @@ export default function App() {
     <AppStateComponent>
       <Router>
         <Routes>
-          <Route path="/" element={<CardCreator></CardCreator>} />
+          <Route path="/" element={<CardCreator />} />
           <Route path="/templates" element={<TemplatesView />} />
         </Routes>
       </Router>
