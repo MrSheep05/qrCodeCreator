@@ -8,7 +8,8 @@ export type Channels =
   | 'reload'
   | 'createFile'
   | 'getContent'
-  | 'removeFile';
+  | 'removeFile'
+  | 'createExcel';
 
 const electronHandler = {
   ipcRenderer: {

@@ -6,7 +6,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   IconButton,
   Tooltip,
@@ -18,23 +17,36 @@ import { Download, NoteAdd, Clear } from '@mui/icons-material';
 
 type Props = {
   fileName: string;
-  content: string;
+  content: { [key: string]: string };
   prepareElement: HTMLDivElement;
+  setContent: React.Dispatch<
+    React.SetStateAction<
+      | {
+          [key: string]: string;
+        }
+      | undefined
+    >
+  >;
 };
-const TemplateCard = ({ fileName, content, prepareElement }: Props) => {
+const TemplateCard = ({
+  fileName,
+  content,
+  prepareElement,
+  setContent,
+}: Props) => {
   const preview = useRef<HTMLDivElement>(null);
+  const templateCard = useRef<HTMLDivElement>(null);
   const [isOpened, setIsOpened] = useState<boolean>(false);
 
   useEffect(() => {
-    prepareElement.innerHTML = content;
-    const card = prepareElement.querySelector('#root')!;
-    console.log(card);
+    prepareElement.innerHTML = content[fileName];
+    const card = prepareElement.querySelector('#card')!;
     html2canvas(card as HTMLElement, { allowTaint: true, useCORS: true }).then(
       (canvas) => {
+        console.log(canvas.height, canvas.width);
         preview.current!.innerHTML = '';
         canvas.style.height = '100%';
         canvas.style.width = '100%';
-        canvas.className = 'templateCanvas';
         preview.current!.appendChild(canvas);
       }
     );
@@ -42,14 +54,14 @@ const TemplateCard = ({ fileName, content, prepareElement }: Props) => {
   }, [content]);
 
   return (
-    <div>
+    <div ref={templateCard}>
       <Card
         style={{ height: '20vh', width: '25vw', margin: '1rem' }}
         className="templateView"
       >
         <CardContent className="templateArea">
-          <Typography className="templateTitle">{fileName}</Typography>
-          <div ref={preview}></div>
+          <Typography>{fileName}</Typography>
+          <div ref={preview} style={{ width: '100%', height: '100%' }}></div>
         </CardContent>
         <CardActions
           className="templateButtons"
@@ -62,7 +74,11 @@ const TemplateCard = ({ fileName, content, prepareElement }: Props) => {
           }}
         >
           <Tooltip title="Pobierz wzór" placement="left">
-            <IconButton>
+            <IconButton
+              onClick={() =>
+                window.electron.ipcRenderer.invoke('createExcel', fileName)
+              }
+            >
               <Download color="info" />
             </IconButton>
           </Tooltip>
@@ -95,8 +111,13 @@ const TemplateCard = ({ fileName, content, prepareElement }: Props) => {
                 'removeFile',
                 fileName
               );
+              if (isSuccessed) {
+                delete content[fileName];
+                console.log(content);
+                setContent(content);
+                templateCard.current!.remove();
+              }
               setIsOpened(false);
-              window.electron.ipcRenderer.invoke('reload');
             }}
           >
             Potwierdź

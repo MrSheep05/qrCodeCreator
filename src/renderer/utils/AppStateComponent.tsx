@@ -90,6 +90,7 @@ export const initialState = {
   index: 0,
   contentOrder: [],
   location: '',
+  columnItems: {},
 };
 
 export const reducer = (state: State, action: Action): any => {
