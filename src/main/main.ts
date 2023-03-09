@@ -19,6 +19,7 @@ import {
   existsSync,
   readdirSync,
   readFileSync,
+  removeSync,
 } from 'fs-extra';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -32,6 +33,8 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+const userDataPath = app.getPath('userData');
+const templatesDir = path.join(userDataPath, 'Templates');
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -149,13 +152,11 @@ ipcMain.on('closing', (event, message) => {
   console.log(message);
 });
 
-ipcMain.on('reload', () => {
+ipcMain.handle('reload', () => {
   mainWindow!.reload();
 });
 
 ipcMain.handle('createFile', (_, { fileName, content }) => {
-  const userDataPath = app.getPath('userData');
-  const templatesDir = path.join(userDataPath, 'Templates');
   const name = fileName === '' ? 'Bez_nazwy.html' : `${fileName}.html`;
   const filePath = path.join(templatesDir, name);
   ensureDir(templatesDir);
@@ -174,10 +175,7 @@ ipcMain.handle('createFile', (_, { fileName, content }) => {
 });
 
 ipcMain.handle('getContent', async () => {
-  const isHTML = /.*\.html/gm;
-  const userDataPath = app.getPath('userData');
-  const templatesDir = path.join(userDataPath, 'Templates');
-
+  const isHTML = /.*\.html/;
   const htmlFiles = readdirSync(templatesDir).filter((file) =>
     isHTML.test(file)
   );
@@ -189,4 +187,15 @@ ipcMain.handle('getContent', async () => {
   }, {});
 
   return response;
+});
+
+ipcMain.handle('removeFile', (_, name) => {
+  const filePath = path.join(templatesDir, `${name}.html`);
+  if (existsSync(filePath)) {
+    if (lstatSync(filePath).isFile()) {
+      removeSync(filePath);
+      return true;
+    }
+  }
+  return false;
 });
