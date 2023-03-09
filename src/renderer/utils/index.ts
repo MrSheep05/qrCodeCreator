@@ -19,3 +19,9 @@ export const contextMenuEventProvider = ({
     );
   };
 };
+
+export const draggingOverStyle = (isOver: boolean): React.CSSProperties => {
+  return isOver
+    ? { backgroundColor: '#b8bab980' }
+    : { backgroundColor: 'unset' };
+};

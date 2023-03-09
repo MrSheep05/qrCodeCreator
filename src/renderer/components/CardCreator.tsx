@@ -1,28 +1,28 @@
 import { AppBar, Toolbar } from '@mui/material';
-import { useContext, useEffect, useRef, useState } from 'react';
-import CardView from './CardView';
+import { useContext, useRef, useState } from 'react';
 import { AppState } from 'renderer/utils/AppStateComponent';
 import { Droppable, Draggable, DragDropContext } from 'react-beautiful-dnd';
-import AspectRatioButton from './AspectRatioButton';
-import ColorPickerButton from './ColorPickerButton';
-import FileButton from './FileButton';
-import OrientationButton from './OrientationButton';
-import QRCodeButton from './QRCodeButton';
-import TextAreaButton from './TextAreaButton';
-import DraggableWrapper from './DraggableWrapper';
-import PlaceholderButton from './PlaceholderButton';
-import CreateTemplateButton from './CreateTemplateButton';
-import NavigationMenuButton from './NavigationMenuButton';
-import TextEditorBar from './TextEditorBar';
 import BrushIcon from '@mui/icons-material/Brush';
 import tinymce from 'tinymce';
-import OrderContainerButton from './OrderContainerButton';
+import CardView from './CardView';
+import AspectRatioButton from './buttons/AspectRatioButton';
+import ColorPickerButton from './buttons/ColorPickerButton';
+import FileButton from './buttons/FileButton';
+import OrientationButton from './buttons/OrientationButton';
+import QRCodeButton from './buttons/QRCodeButton';
+import TextAreaButton from './buttons/TextAreaButton';
+import DraggableWrapper from './DraggableWrapper';
+import PlaceholderButton from './buttons/PlaceholderButton';
+import CreateTemplateButton from './buttons/CreateTemplateButton';
+import NavigationMenuButton from './buttons/NavigationMenuButton';
+import TextEditorBar from './TextEditorBar';
+import OrderContainerButton from './buttons/OrderContainerButton';
 
-const CardCreator = () => {
+function CardCreator() {
   const { state, dispatch } = useContext(AppState);
   const [color, setColor] = useState<string>('#ffffff');
+  const cardViewRef = useRef<HTMLDivElement>(null);
   const [isHorizontal, setIsHorizontal] = useState<boolean>(true);
-  const [isFocused, setIsFocused] = useState<number | undefined>();
 
   const orientationButtonFn = (isTrue = true) => {
     return () => {
@@ -64,22 +64,22 @@ const CardCreator = () => {
 
     button2: (
       <OrientationButton
-        fn={orientationButtonFn()}
+        fn={orientationButtonFn(true)}
         isDisabled={isHorizontal}
         type="horizontal"
       />
     ),
 
     button4: <AspectRatioButton />,
-    button5: <QRCodeButton></QRCodeButton>,
+    button5: <QRCodeButton />,
     button6: (
-      <ColorPickerButton fn={colorChangeFn} title={'Kolor karty'}>
+      <ColorPickerButton fn={colorChangeFn} title="Kolor karty">
         <BrushIcon />
       </ColorPickerButton>
     ),
-    button7: <TextAreaButton fn={setIsFocused} />,
+    button7: <TextAreaButton />,
     button8: <PlaceholderButton />,
-    button9: <CreateTemplateButton />,
+    button9: <CreateTemplateButton cardView={cardViewRef} />,
     button10: <OrderContainerButton isHorizontal={isHorizontal} />,
   };
 
@@ -113,12 +113,10 @@ const CardCreator = () => {
               >
                 {state.buttonsOrder.map((key, id) => (
                   <Draggable draggableId={key} index={id} key={key}>
-                    {(provided, snapshot) => (
+                    {(provided) => (
                       <DraggableWrapper
                         provided={provided}
-                        id={key}
                         innerRef={provided.innerRef}
-                        isDragging={snapshot.isDragging}
                       >
                         {buttons[key]}
                       </DraggableWrapper>
@@ -134,11 +132,15 @@ const CardCreator = () => {
         </AppBar>
       </DragDropContext>
 
-      <CardView orientation={isHorizontal} color={color}></CardView>
+      <CardView
+        orientation={isHorizontal}
+        color={color}
+        innerRef={cardViewRef}
+      />
 
-      <TextEditorBar focus={isFocused} setFocus={setIsFocused} />
+      <TextEditorBar />
     </div>
   );
-};
+}
 
 export default CardCreator;

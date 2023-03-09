@@ -5,17 +5,24 @@ interface Props {
 }
 
 interface ChildrenList {
-  [key: string]: JSX.Element;
+  [key: string]: { content: JSX.Element; placement: undefined | string };
 }
-type Action = {
+export type Action = {
   type:
     | 'setRatio'
     | 'setQR'
     | 'appendChild'
     | 'setButtonsOrder'
     | 'removeChild'
-    | 'contentOrder';
-  payload: string | JSX.Element | string[] | number | undefined;
+    | 'contentOrder'
+    | 'appendColumn'
+    | 'removeColumn'
+    | 'setLocation';
+  payload: string | JSX.Element | string[] | number | undefined | boolean;
+  columns?: { [key: string]: string[] };
+  place?: {
+    [key: string]: { content: JSX.Element; placement: string | undefined };
+  };
 };
 
 type State = {
@@ -25,12 +32,27 @@ type State = {
   buttonsOrder: string[];
   index: number;
   contentOrder: string[];
+  columnItems: { [key: string]: string[] };
+  location: string;
 };
 
 type AppStateContext = {
   state: State;
   dispatch: (action: Action) => void;
 };
+
+const initialButtonsOrder = [
+  'button1',
+  'button2',
+  'button3',
+  'button4',
+  'button5',
+  'button6',
+  'button7',
+  'button8',
+  'button9',
+  'button10',
+];
 
 const saveInLocalStorage = ({
   data,
@@ -56,19 +78,6 @@ const getFromLocalStorage = ({
   return ifFailed;
 };
 
-const initialButtonsOrder = [
-  'button1',
-  'button2',
-  'button3',
-  'button4',
-  'button5',
-  'button6',
-  'button7',
-  'button8',
-  'button9',
-  'button10',
-];
-
 export const AppState = createContext({} as AppStateContext);
 
 export const initialState = {
@@ -80,6 +89,7 @@ export const initialState = {
   }),
   index: 0,
   contentOrder: [],
+  location: '',
 };
 
 export const reducer = (state: State, action: Action): any => {
@@ -94,8 +104,24 @@ export const reducer = (state: State, action: Action): any => {
       return {
         ...state,
         index: state.index + 1,
-        children: { ...state.children, [state.index]: action.payload },
+        children: {
+          ...state.children,
+          [state.index]: { content: action.payload },
+        },
         contentOrder: [...state.contentOrder, `${state.index}`],
+      };
+    }
+
+    case 'appendColumn': {
+      return {
+        ...state,
+        index: state.index + 1,
+        children: {
+          ...state.children,
+          [state.index]: { content: action.payload },
+        },
+        contentOrder: [...state.contentOrder, `${state.index}`],
+        columnItems: { ...state.columnItems, [state.index]: [] },
       };
     }
 
@@ -105,6 +131,20 @@ export const reducer = (state: State, action: Action): any => {
 
     case 'removeChild': {
       if (typeof action.payload === 'number') {
+        if (Object.keys(state.children[action.payload]).includes('placement')) {
+          const columnId = state.children[action.payload].placement;
+          delete state.children[action.payload];
+          return {
+            ...state,
+            children: state.children,
+            columnItems: {
+              ...state.columnItems,
+              [columnId!]: state.columnItems[columnId!].filter(
+                (itemKey: string) => itemKey !== `${action.payload}`
+              ),
+            },
+          };
+        }
         delete state.children[action.payload];
         return {
           ...state,
@@ -116,11 +156,41 @@ export const reducer = (state: State, action: Action): any => {
       }
     }
 
+    case 'removeColumn': {
+      if (
+        typeof action.payload === 'string' ||
+        typeof action.payload === 'number'
+      ) {
+        const childrenToRemove = state.columnItems[action.payload];
+        childrenToRemove.forEach((key) => delete state.children[key]);
+        delete state.columnItems[action.payload];
+
+        return {
+          ...state,
+          children: state.children,
+          columnItems: state.columnItems,
+          contentOrder: state.contentOrder.filter(
+            (value) => value !== `${action.payload}`
+          ),
+        };
+      }
+      break;
+    }
+
     case 'contentOrder': {
-      return {
-        ...state,
-        contentOrder: action.payload,
-      };
+      if (Object.keys(action).includes('columns')) {
+        return {
+          ...state,
+          contentOrder: action.payload,
+          columnItems: action.columns,
+          children: action.place,
+        };
+      }
+      break;
+    }
+
+    case 'setLocation': {
+      return { ...state, location: action.payload };
     }
 
     default: {
@@ -129,7 +199,7 @@ export const reducer = (state: State, action: Action): any => {
   }
 };
 
-const AppStateComponent = ({ children }: Props) => {
+function AppStateComponent({ children }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   window.onclose = () => {
@@ -145,6 +215,6 @@ const AppStateComponent = ({ children }: Props) => {
       {children}
     </AppState.Provider>
   );
-};
+}
 
 export default AppStateComponent;
