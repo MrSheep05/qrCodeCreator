@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
 import { useRef, useState } from 'react';
+import html2canvas from 'html2canvas';
 
 type Props = {
   cardView: React.RefObject<HTMLDivElement>;
@@ -20,6 +21,12 @@ function CreateTemplateButton({ cardView }: Props) {
   const [isOpened, setIsOpened] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>('');
   const cloneRef = useRef<HTMLDivElement>(null);
+
+  const toBase64 = (buffer: Buffer) => {
+    return btoa(
+      buffer.reduce((data, byte) => data + String.fromCharCode(byte), '')
+    );
+  };
 
   const saveToHtml = async () => {
     const changeable = /\[[A-Z0-9]*\]/;
@@ -31,8 +38,20 @@ function CreateTemplateButton({ cardView }: Props) {
       if (changeable.test(img.title)) {
         img.src = `data:image/png;base64${img.title}`;
         img.title = '';
+      } else {
+        console.log('saving permamently to html');
+        // html2canvas(img, {
+        //   allowTaint: true,
+        //   useCORS: true,
+        // }).then((canvas) => {
+        //   const url = canvas.toDataURL();
+        //   const data = url.replace(/^data:image\/\w+;base64,/, '');
+        //   const buffer = Buffer.from(data, 'base64');
+        //   img.src = `data:image/jpeg;base64${toBase64(buffer)}`;
+        // });
       }
     });
+
     html.querySelectorAll('header').forEach((node) => node.remove());
     html.querySelector("div[role='presentation']")?.remove();
     const response = await window.electron.ipcRenderer.invoke('createFile', {
@@ -103,3 +122,6 @@ function CreateTemplateButton({ cardView }: Props) {
 }
 
 export default CreateTemplateButton;
+function toBase64() {
+  throw new Error('Function not implemented.');
+}

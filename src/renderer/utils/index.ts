@@ -25,3 +25,23 @@ export const draggingOverStyle = (isOver: boolean): React.CSSProperties => {
     ? { backgroundColor: '#b8bab980' }
     : { backgroundColor: 'unset' };
 };
+
+export const familyFonts = [
+  { label: 'Andale Mono', value: 'andale mono,times' },
+  { label: 'Arial', value: 'arial,helvetica,sans-serif' },
+  { label: 'Arial Black', value: 'arial black,avant garde' },
+  { label: 'Book Antiqua', value: 'book antiqua,palatino' },
+  { label: 'Comic Sans MS', value: 'comic sans ms,sans-serif' },
+  { label: 'Courier New', value: 'courier new,courier' },
+  { label: 'Georgia', value: 'georgia,palatino' },
+  { label: 'Helvetica', value: 'helvetica' },
+  { label: 'Impact', value: 'impact,chicago' },
+  { label: 'Symbol', value: 'symbol' },
+  { label: 'Tahoma', value: 'tahoma,arial,helvetica,sans-serif' },
+  { label: 'Terminal', value: 'terminal,monaco' },
+  { label: 'Times New Roman', value: 'times new roman,times' },
+  { label: 'Trebuchet MS', value: 'trebuchet ms,geneva' },
+  { label: 'Verdana', value: 'verdana,geneva' },
+  { label: 'Webdings', value: 'webdings' },
+  { label: 'Wingdings', value: 'wingdings,zapf dingbats' },
+];
