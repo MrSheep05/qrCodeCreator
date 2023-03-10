@@ -49,7 +49,7 @@ function CreateTemplateButton({ cardView }: Props) {
           const url = canvas.toDataURL();
           const data = url.replace(/^data:image\/\w+;base64,/, '');
           const buffer = Buffer.from(data, 'base64');
-          image.src = `data:image/png;base64 ${toBase64(buffer)}`;
+          image.src = `data:image/png;base64, ${toBase64(buffer)}`;
           img.replaceWith(image);
         });
       }
