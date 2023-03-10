@@ -42,7 +42,6 @@ function CreateTemplateButton({ cardView }: Props) {
         image.style.height = img.style.height;
         img.replaceWith(image);
       } else {
-        console.log('saving permamently to html');
         html2canvas(img, {
           allowTaint: true,
           useCORS: true,
@@ -50,7 +49,7 @@ function CreateTemplateButton({ cardView }: Props) {
           const url = canvas.toDataURL();
           const data = url.replace(/^data:image\/\w+;base64,/, '');
           const buffer = Buffer.from(data, 'base64');
-          image.src = `data:image/jpeg;base64${toBase64(buffer)}`;
+          image.src = `data:image/png;base64 ${toBase64(buffer)}`;
           img.replaceWith(image);
         });
       }
