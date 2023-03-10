@@ -36,10 +36,12 @@ function FileButton() {
         }}
       />
 
-      <Tooltip title="Wstaw obraz">
-        <IconButton size="small" onClick={fileButtonFn}>
-          <ImageIcon />
-        </IconButton>
+      <Tooltip title="Wstaw obraz [NIE DZIALA]">
+        <div>
+          <IconButton size="small" onClick={fileButtonFn} disabled={true}>
+            <ImageIcon />
+          </IconButton>
+        </div>
       </Tooltip>
     </div>
   );

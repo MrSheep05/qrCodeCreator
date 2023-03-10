@@ -35,20 +35,24 @@ function CreateTemplateButton({ cardView }: Props) {
     html.innerHTML = '';
     html.appendChild(clone);
     html.querySelectorAll('img').forEach((img) => {
+      const image = document.createElement('img');
       if (changeable.test(img.title)) {
-        img.src = `data:image/png;base64${img.title}`;
-        img.title = '';
+        image.src = `data:image/png;base64${img.title}`;
+        image.style.width = img.style.width;
+        image.style.height = img.style.height;
+        img.replaceWith(image);
       } else {
         console.log('saving permamently to html');
-        // html2canvas(img, {
-        //   allowTaint: true,
-        //   useCORS: true,
-        // }).then((canvas) => {
-        //   const url = canvas.toDataURL();
-        //   const data = url.replace(/^data:image\/\w+;base64,/, '');
-        //   const buffer = Buffer.from(data, 'base64');
-        //   img.src = `data:image/jpeg;base64${toBase64(buffer)}`;
-        // });
+        html2canvas(img, {
+          allowTaint: true,
+          useCORS: true,
+        }).then((canvas) => {
+          const url = canvas.toDataURL();
+          const data = url.replace(/^data:image\/\w+;base64,/, '');
+          const buffer = Buffer.from(data, 'base64');
+          image.src = `data:image/jpeg;base64${toBase64(buffer)}`;
+          img.replaceWith(image);
+        });
       }
     });
 
