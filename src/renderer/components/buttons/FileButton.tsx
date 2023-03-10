@@ -37,9 +37,11 @@ function FileButton() {
       />
 
       <Tooltip title="Wstaw obraz">
-        <IconButton size="small" onClick={fileButtonFn}>
-          <ImageIcon />
-        </IconButton>
+        <div>
+          <IconButton size="small" onClick={fileButtonFn}>
+            <ImageIcon />
+          </IconButton>
+        </div>
       </Tooltip>
     </div>
   );

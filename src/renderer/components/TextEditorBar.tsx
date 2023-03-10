@@ -1,4 +1,12 @@
-import { AppBar, IconButton, Paper, Toolbar, Tooltip } from '@mui/material';
+import {
+  AppBar,
+  Autocomplete,
+  IconButton,
+  Paper,
+  TextField,
+  Toolbar,
+  Tooltip,
+} from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import {
   Clear,
@@ -19,6 +27,8 @@ import tinymce from 'tinymce/tinymce';
 import { AppState } from 'renderer/utils/AppStateComponent';
 import TextEditorButton from './buttons/TextEditorButton';
 import ColorPickerButton from './buttons/ColorPickerButton';
+import { familyFonts } from 'renderer/utils';
+import FamilyFont from './FamilyFont';
 
 function TextEditorBar() {
   const [color, setColor] = useState<string>('#000000');
@@ -105,6 +115,15 @@ function TextEditorBar() {
             <Add />
           </IconButton>
         </Paper>
+        {/* <Autocomplete
+          disablePortal
+          id="combo-box-demo"
+          options={familyFonts}
+          sx={{ width: 300 }}
+          renderInput={(params) => {
+            return <FamilyFont {...params} label="Movie" />;
+          }}
+        /> */}
         <TextEditorButton title="Pogrubienie tekstu" execCommand="Bold">
           <FormatBold />
         </TextEditorButton>
