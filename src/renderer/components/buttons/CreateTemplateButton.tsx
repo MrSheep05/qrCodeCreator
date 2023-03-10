@@ -22,10 +22,17 @@ function CreateTemplateButton({ cardView }: Props) {
   const cloneRef = useRef<HTMLDivElement>(null);
 
   const saveToHtml = async () => {
+    const changeable = /\[[A-Z0-9]*\]/;
     const clone = document.querySelector('html')!.cloneNode(true);
     const html = cloneRef.current!;
     html.innerHTML = '';
     html.appendChild(clone);
+    html.querySelectorAll('img').forEach((img) => {
+      if (changeable.test(img.title)) {
+        img.src = `data:image/png;base64${img.title}`;
+        img.title = '';
+      }
+    });
     html.querySelectorAll('header').forEach((node) => node.remove());
     html.querySelector("div[role='presentation']")?.remove();
     const response = await window.electron.ipcRenderer.invoke('createFile', {
@@ -83,7 +90,7 @@ function CreateTemplateButton({ cardView }: Props) {
               const isSuccess = await saveToHtml();
               if (isSuccess) {
                 setIsOpened(false);
-                window.electron.ipcRenderer.sendMessage('reload', []);
+                window.electron.ipcRenderer.invoke('reload');
               }
             }}
           >

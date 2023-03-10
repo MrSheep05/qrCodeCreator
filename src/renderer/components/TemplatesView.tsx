@@ -85,18 +85,31 @@ function TemplatesView() {
                 {Object.keys(templates!)
                   .slice(
                     index * 3,
-                    index + 1 === rowsNumber.length
+                    index + 1 !== rowsNumber.length
                       ? index * 3 + (rowsNumber.length % 3) + 1
-                      : index * 3 + 3
+                      : index * 3 + 4
                   )
-                  .map((name) => (
-                    <TemplateCard
-                      prepareElement={prepare.current!}
-                      fileName={name}
-                      key={name}
-                      content={templates![name]}
-                    />
-                  ))}
+                  .map((name) => {
+                    console.log(
+                      Object.keys(templates!).slice(
+                        index * 3,
+                        index + 1 === rowsNumber.length
+                          ? index * 3 + (rowsNumber.length % 3) + 1
+                          : index * 3 + 3
+                      )
+                    );
+                    console.log(Object.keys(templates!));
+
+                    return (
+                      <TemplateCard
+                        prepareElement={prepare.current!}
+                        fileName={name}
+                        key={name}
+                        content={templates!}
+                        setContent={setTemplates}
+                      />
+                    );
+                  })}
               </div>
             ))
           : undefined}

@@ -19,9 +19,13 @@ import {
   existsSync,
   readdirSync,
   readFileSync,
+  removeSync,
+  writeFileSync,
 } from 'fs-extra';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { readExcelData } from './excelOperations';
+import * as Excel from 'exceljs';
 
 class AppUpdater {
   constructor() {
@@ -32,7 +36,13 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+const userDataPath = app.getPath('userData');
+const templatesDir = path.join(userDataPath, 'Templates');
 
+const withoutBrackets = (text: string) => {
+  const without = text;
+  return without.replace('[', '').replace(']', '');
+};
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
@@ -149,13 +159,11 @@ ipcMain.on('closing', (event, message) => {
   console.log(message);
 });
 
-ipcMain.on('reload', () => {
+ipcMain.handle('reload', () => {
   mainWindow!.reload();
 });
 
 ipcMain.handle('createFile', (_, { fileName, content }) => {
-  const userDataPath = app.getPath('userData');
-  const templatesDir = path.join(userDataPath, 'Templates');
   const name = fileName === '' ? 'Bez_nazwy.html' : `${fileName}.html`;
   const filePath = path.join(templatesDir, name);
   ensureDir(templatesDir);
@@ -174,10 +182,7 @@ ipcMain.handle('createFile', (_, { fileName, content }) => {
 });
 
 ipcMain.handle('getContent', async () => {
-  const isHTML = /.*\.html/gm;
-  const userDataPath = app.getPath('userData');
-  const templatesDir = path.join(userDataPath, 'Templates');
-
+  const isHTML = /.*\.html/;
   const htmlFiles = readdirSync(templatesDir).filter((file) =>
     isHTML.test(file)
   );
@@ -190,3 +195,95 @@ ipcMain.handle('getContent', async () => {
 
   return response;
 });
+
+ipcMain.handle('removeFile', (_, name) => {
+  const filePath = path.join(templatesDir, `${name}.html`);
+  if (existsSync(filePath)) {
+    if (lstatSync(filePath).isFile()) {
+      removeSync(filePath);
+      return true;
+    }
+  }
+  return false;
+});
+
+ipcMain.handle('createExcel', async (_, name) => {
+  const filePath = path.join(templatesDir, `${name}.html`);
+  console.log(filePath);
+  if (existsSync(filePath)) {
+    if (lstatSync(filePath).isFile()) {
+      const content = readFileSync(filePath, {
+        encoding: 'utf8',
+      });
+
+      const checkForQR = /<canvas.*/;
+      const hasQR = checkForQR.test(content) ? 'id' : null;
+      const matches = content.match(/\[[A-Z0-9]*\]/gm);
+      const brackets = matches ? matches : [];
+      const tags: string[] = [hasQR!, ...brackets];
+      if (tags.length > 0) {
+        const directionPath = dialog.showSaveDialogSync({
+          title: 'Wzór',
+          buttonLabel: 'Stwórz',
+        });
+        if (directionPath) {
+          if (directionPath) {
+            const workbook = new Excel.Workbook();
+            const worksheet = workbook.addWorksheet('tagi');
+
+            worksheet.columns = tags.map((tag) => {
+              return { header: tag, key: withoutBrackets(tag) };
+            }) as unknown as Partial<Excel.Column>[];
+            const indexRow = tags.reduce((prev, tag) => {
+              return { ...prev, [withoutBrackets(tag)]: tag };
+            }, {});
+            workbook.xlsx.writeFile(`${directionPath}.xlsx`);
+          }
+        }
+      }
+    }
+  }
+});
+
+ipcMain.handle('makeFromTemplates', async (_, name) => {
+  const filePath = path.join(templatesDir, `${name}.html`);
+  if (existsSync(filePath)) {
+    if (lstatSync(filePath).isFile()) {
+      const selectedExcel = dialog.showOpenDialogSync({
+        buttonLabel: 'Wybierz wzór',
+        properties: ['openFile'],
+        filters: [{ name: 'all', extensions: ['xlsx'] }],
+      });
+      if (selectedExcel) {
+        const [excelPath] = selectedExcel;
+        const response = await readExcelData(excelPath);
+        if (response) {
+          const directionPath = dialog.showSaveDialogSync({
+            title: 'Folder na zdjęcia',
+            buttonLabel: 'Stwórz',
+          });
+          if (directionPath) {
+            ensureDir(directionPath);
+
+            return { response, directionPath };
+          }
+        }
+      }
+    }
+  }
+});
+
+ipcMain.handle(
+  'saveImage',
+  async (
+    _,
+    {
+      file,
+      directionPath,
+      index,
+    }: { file: Buffer; directionPath: string; index: number }
+  ) => {
+    const imgPath = path.join(directionPath, `${index}card.png`);
+    writeFileSync(imgPath, file);
+  }
+);

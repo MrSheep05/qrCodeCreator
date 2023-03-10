@@ -132,6 +132,7 @@ function CardView({ orientation, color, innerRef }: props) {
         >
           {(provided) => (
             <Card
+              id="card"
               {...provided.droppableProps}
               ref={provided.innerRef}
               sx={{

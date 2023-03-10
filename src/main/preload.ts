@@ -6,10 +6,12 @@ export type Channels =
   | 'ipc-example'
   | 'closing'
   | 'reload'
-  | 'getPath'
-  | 'joinPath'
   | 'createFile'
-  | 'getContent';
+  | 'getContent'
+  | 'removeFile'
+  | 'createExcel'
+  | 'makeFromTemplates'
+  | 'saveImage';
 
 const electronHandler = {
   ipcRenderer: {
