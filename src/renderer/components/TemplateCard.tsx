@@ -53,16 +53,16 @@ const TemplateCard = ({
         const checkForQR = /<canvas.*/;
 
         if (isNotQR.test(tag)) {
-          // prepareElement.querySelectorAll('img').forEach((img) => {
-          //   if (img.src.includes(tag)) {
-          //     const image = document.createElement('img');
-          //     const { width, height } = img.style;
-          //     image.style.height = height;
-          //     image.style.width = width;
-          //     image.src = response[row][tag];
-          //     img.replaceWith(image);
-          //   }
-          // });
+          prepareElement.querySelectorAll('img').forEach((img) => {
+            if (img.src.includes(tag)) {
+              const image = document.createElement('img');
+              const { width, height } = img.style;
+              image.style.height = height;
+              image.style.width = width;
+              image.src = `data:image/png;base64, ${response[row][tag]}`;
+              img.replaceWith(image);
+            }
+          });
           prepareElement.innerHTML = prepareElement.innerHTML.replace(
             tag,
             response[row][tag]

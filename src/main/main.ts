@@ -154,11 +154,6 @@ app
   })
   .catch(console.log);
 
-ipcMain.on('closing', (event, message) => {
-  event.preventDefault();
-  console.log(message);
-});
-
 ipcMain.handle('reload', () => {
   mainWindow!.reload();
 });
