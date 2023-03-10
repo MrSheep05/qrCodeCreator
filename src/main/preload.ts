@@ -9,7 +9,9 @@ export type Channels =
   | 'createFile'
   | 'getContent'
   | 'removeFile'
-  | 'createExcel';
+  | 'createExcel'
+  | 'makeFromTemplates'
+  | 'saveImage';
 
 const electronHandler = {
   ipcRenderer: {

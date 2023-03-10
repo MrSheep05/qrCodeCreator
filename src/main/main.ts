@@ -20,9 +20,11 @@ import {
   readdirSync,
   readFileSync,
   removeSync,
+  writeFileSync,
 } from 'fs-extra';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { readExcelData } from './excelOperations';
 import * as Excel from 'exceljs';
 
 class AppUpdater {
@@ -225,18 +227,63 @@ ipcMain.handle('createExcel', async (_, name) => {
           buttonLabel: 'Stwórz',
         });
         if (directionPath) {
-          const workbook = new Excel.Workbook();
-          const worksheet = workbook.addWorksheet('tagi');
+          if (directionPath) {
+            const workbook = new Excel.Workbook();
+            const worksheet = workbook.addWorksheet('tagi');
 
-          worksheet.columns = tags.map((tag) => {
-            return { header: tag, key: withoutBrackets(tag) };
-          }) as unknown as Partial<Excel.Column>[];
-          const indexRow = tags.reduce((prev, tag) => {
-            return { ...prev, [withoutBrackets(tag)]: tag };
-          }, {});
-          workbook.xlsx.writeFile(`${directionPath}.xlsx`);
+            worksheet.columns = tags.map((tag) => {
+              return { header: tag, key: withoutBrackets(tag) };
+            }) as unknown as Partial<Excel.Column>[];
+            const indexRow = tags.reduce((prev, tag) => {
+              return { ...prev, [withoutBrackets(tag)]: tag };
+            }, {});
+            workbook.xlsx.writeFile(`${directionPath}.xlsx`);
+          }
         }
       }
     }
   }
 });
+
+ipcMain.handle('makeFromTemplates', async (_, name) => {
+  const filePath = path.join(templatesDir, `${name}.html`);
+  if (existsSync(filePath)) {
+    if (lstatSync(filePath).isFile()) {
+      const selectedExcel = dialog.showOpenDialogSync({
+        buttonLabel: 'Wybierz wzór',
+        properties: ['openFile'],
+        filters: [{ name: 'all', extensions: ['xlsx'] }],
+      });
+      if (selectedExcel) {
+        const [excelPath] = selectedExcel;
+        const response = await readExcelData(excelPath);
+        if (response) {
+          const directionPath = dialog.showSaveDialogSync({
+            title: 'Folder na zdjęcia',
+            buttonLabel: 'Stwórz',
+          });
+          if (directionPath) {
+            ensureDir(directionPath);
+
+            return { response, directionPath };
+          }
+        }
+      }
+    }
+  }
+});
+
+ipcMain.handle(
+  'saveImage',
+  async (
+    _,
+    {
+      file,
+      directionPath,
+      index,
+    }: { file: Buffer; directionPath: string; index: number }
+  ) => {
+    const imgPath = path.join(directionPath, `${index}card.png`);
+    writeFileSync(imgPath, file);
+  }
+);
