@@ -13,7 +13,7 @@ type props = {
 function CardView({ orientation, color, innerRef }: props) {
   const [width, height] = useRatio(orientation);
   const { state, dispatch } = useContext(AppState);
-
+  console.log(state, 'AFTER');
   const onDragEnd = (result: any) => {
     const { destination, source, draggableId } = result;
 
@@ -41,7 +41,13 @@ function CardView({ orientation, color, innerRef }: props) {
         type: 'contentOrder',
         payload: newOrder,
         columns: state.columnItems,
-        place: state.children,
+        place: {
+          ...state.children,
+          [draggableId]: {
+            ...state.children[draggableId],
+            placement: 'card',
+          },
+        },
       });
       return;
     }
@@ -58,7 +64,13 @@ function CardView({ orientation, color, innerRef }: props) {
             ...state.columnItems,
             [destination.droppableId]: newColumn,
           },
-          place: state.children,
+          place: {
+            ...state.children,
+            [draggableId]: {
+              ...state.children[draggableId],
+              placement: destination.droppableId,
+            },
+          },
         });
         return;
       }
@@ -115,7 +127,7 @@ function CardView({ orientation, color, innerRef }: props) {
           ...state.children,
           [draggableId]: {
             ...state.children[draggableId],
-            placement: columnIndex,
+            placement: destination.droppableId,
           },
         },
       });

@@ -21,7 +21,7 @@ export type Action = {
   payload: string | JSX.Element | string[] | number | undefined | boolean;
   columns?: { [key: string]: string[] };
   place?: {
-    [key: string]: { content: JSX.Element; placement: string | undefined };
+    [key: string]: { content: JSX.Element; placement: string };
   };
 };
 
@@ -107,7 +107,7 @@ export const reducer = (state: State, action: Action): any => {
         index: state.index + 1,
         children: {
           ...state.children,
-          [state.index]: { content: action.payload },
+          [state.index]: { content: action.payload, placement: 'card' },
         },
         contentOrder: [...state.contentOrder, `${state.index}`],
       };
@@ -119,7 +119,7 @@ export const reducer = (state: State, action: Action): any => {
         index: state.index + 1,
         children: {
           ...state.children,
-          [state.index]: { content: action.payload },
+          [state.index]: { content: action.payload, placement: 'card' },
         },
         contentOrder: [...state.contentOrder, `${state.index}`],
         columnItems: { ...state.columnItems, [state.index]: [] },
@@ -132,9 +132,10 @@ export const reducer = (state: State, action: Action): any => {
 
     case 'removeChild': {
       if (typeof action.payload === 'number') {
-        if (Object.keys(state.children[action.payload]).includes('placement')) {
+        if (state.children[action.payload].placement !== 'card') {
           const columnId = state.children[action.payload].placement;
           delete state.children[action.payload];
+          console.log(state.children);
           return {
             ...state,
             children: state.children,
@@ -147,6 +148,8 @@ export const reducer = (state: State, action: Action): any => {
           };
         }
         delete state.children[action.payload];
+        console.log(state.children);
+
         return {
           ...state,
           children: state.children,
